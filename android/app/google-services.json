@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "96012869985",
+    "project_id": "chatbox-b5748",
+    "storage_bucket": "chatbox-b5748.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96012869985:android:7b8df2375b43ea33b92520",
+        "android_client_info": {
+          "package_name": "com.chatbox"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCaYNHQwTxapJ1pXvi0kl4-dWs7YDbyZk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
