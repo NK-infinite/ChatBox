@@ -1,3 +1,4 @@
+import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import {
   View,
@@ -11,22 +12,25 @@ import {
   ScrollView,
 } from 'react-native';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/FontAwesome6';
+import { RootStackParamList } from '../Navigations/StackNavigations';
+import LinearGradient from 'react-native-linear-gradient';
+import styles from '../styles/Login_Singup';
 
-
+ type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 // interface Props {
 //   navigation: LoginScreenNavigationProp;
 // }
 
-const LoginScreen = () => {
-  const [email, setEmail] = useState('');
+const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) => {
+  const [Number, setnumber] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    if (!Number || !password) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -40,34 +44,38 @@ const LoginScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+    // <KeyboardAvoidingView
+    //   style={styles.container}
+    //   behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    // >
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+       {/* <LinearGradient
+        colors={[ '#007AFF' ,  '#6C63FF']}
+        style={StyleSheet.absoluteFill}
+      /> */}
         <View style={styles.header}>
           <Text style={styles.title}>Welcome Back</Text>
           <Text style={styles.subtitle}>Sign in to your account</Text>
         </View>
 
         <View style={styles.form}>
-          {/* Email Input */}
+          {/* Number Input */}
           <View style={styles.inputContainer}>
-            <Icon name="email-outline" size={20} color="#666" style={styles.inputIcon} />
+            <Icon name="phone" size={20} color="#666" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Email Address"
+              placeholder="phone number"
               placeholderTextColor="#999"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
+              value={Number}
+              onChangeText={setnumber}
+              keyboardType='numeric' 
+             autoCapitalize="none"
             />
           </View>
 
           {/* Password Input */}
           <View style={styles.inputContainer}>
-            <Icon name="lock-outline" size={20} color="#666" style={styles.inputIcon} />
+            <Icon name="lock" size={20} color="#666" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               placeholder="Password"
@@ -81,7 +89,7 @@ const LoginScreen = () => {
               style={styles.eyeIcon}
             >
               <Icon
-                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                name={showPassword ? 'eye-slash' : 'eye'}
                 size={20}
                 color="#666"
               />
@@ -92,8 +100,6 @@ const LoginScreen = () => {
           <TouchableOpacity
           //  onPress={() => navigation.navigate('ForgotPassword')}
             style={styles.forgotPassword}
-
-              
           >
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
@@ -115,14 +121,14 @@ const LoginScreen = () => {
           <View style={styles.signupContainer}>
             <Text style={styles.signupText}>Don't have an account? </Text>
             <TouchableOpacity 
-            //onPress={() => navigation.navigate('Signup')}
+            onPress={() => navigation.navigate('Signup')}
             >
               <Text style={styles.signupLink}>Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Social Login */}
+        {/* Social Login
         <View style={styles.socialContainer}>
           <Text style={styles.socialText}>Or continue with</Text>
           <View style={styles.socialButtons}>
@@ -136,122 +142,11 @@ const LoginScreen = () => {
               <Icon name="apple" size={20} color="#000" />
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
       </ScrollView>
-    </KeyboardAvoidingView>
+   // </KeyboardAvoidingView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-  form: {
-    marginBottom: 30,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f8f8f8',
-    borderRadius: 12,
-    marginBottom: 16,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#e1e1e1',
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: 16,
-    fontSize: 16,
-    color: '#333',
-  },
-  eyeIcon: {
-    padding: 4,
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: 24,
-  },
-  forgotPasswordText: {
-    color: '#007AFF',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  loginButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  loginButtonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  loginButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  signupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  signupText: {
-    color: '#666',
-    fontSize: 14,
-  },
-  signupLink: {
-    color: '#007AFF',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  socialContainer: {
-    alignItems: 'center',
-  },
-  socialText: {
-    color: '#666',
-    marginBottom: 16,
-    fontSize: 14,
-  },
-  socialButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  socialButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#f8f8f8',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 8,
-    borderWidth: 1,
-    borderColor: '#e1e1e1',
-  },
-});
 
 export default LoginScreen;
