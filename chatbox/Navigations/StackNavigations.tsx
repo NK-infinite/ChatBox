@@ -3,50 +3,63 @@ import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from '../Screen/LoginScreen'
 import SignupScreen from '../Screen/SinupScreen';
 import TermsScreen from '../Screen/TermsPrivacyScreen';
-import OTPVerificationScreen from '../Screen/OtpVerification';
-
+import HomeScreen from '../Screen/HomeScreen';
+import EmailVerification from '../Screen/EmailVericationScreen';
+import ForgotPasswordScreen from '../Screen/ForgotPassWordScreen';
 export type RootStackParamList = {
     HomeScreen: undefined;
     Login: undefined;
     Signup: undefined;
+    Forgotpass: undefined;
     terms: undefined;
-   OTPVerification: { number: string; purpose: 'signup' | 'reset' }; 
-
+    OTPVerification: { email: string; purpose: 'signup' | 'reset', confirmation: any };
+    EmailVerification: undefined;
 };
 const StackNavigations = () => {
     const Stack = createNativeStackNavigator<RootStackParamList>();
-
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName="Login">
                 <Stack.Screen name="Login"
-                options={
-                    {
-                        headerShown: false
+                    options={
+                        {
+                            headerShown: false
+                        }
                     }
-                }
-                component={LoginScreen} />
-                <Stack.Screen name="Signup" 
-                options={
-                    {
-                        headerShown: false
+                    component={LoginScreen} />
+                <Stack.Screen name="Signup"
+                    options={
+                        {
+                            headerShown: false
+                        }
                     }
-                }
-                component={SignupScreen} />
+
+                    component={SignupScreen}
+                />
                 <Stack.Screen name="terms"
-                options={
-                    {
-                        headerShown: false
+                    options={
+                        {
+                            headerShown: false
+                        }
                     }
-                } component={TermsScreen} />
-                <Stack.Screen 
-                options={
-                    {
+                     component={TermsScreen} />
+
+                <Stack.Screen
+                    name="HomeScreen"
+                    component={HomeScreen}
+                />
+
+                <Stack.Screen
+                    name="EmailVerification"
+                    component={EmailVerification} />
+
+                <Stack.Screen
+                    options={{
                         headerShown: false
-                    }
-                }
-                name="OTPVerification"
-                 component={OTPVerificationScreen} />
+                    }}
+                    name="Forgotpass"
+                    component={ForgotPasswordScreen} />
+
             </Stack.Navigator>
         </NavigationContainer>
     );

@@ -14,9 +14,12 @@ import {
 
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { RootStackParamList } from '../Navigations/StackNavigations';
-import LinearGradient from 'react-native-linear-gradient';
+
 import styles from '../styles/Login_Singup';
 
+import login from '../Firebase/login';
+
+import ModalProvider, { useModal }  from '../Components/ModalComponet';
  type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 // interface Props {
@@ -24,23 +27,30 @@ import styles from '../styles/Login_Singup';
 // }
 
 const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) => {
-  const [Number, setnumber] = useState('');
+  const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+ const { showModal } = useModal(); 
+
 
   const handleLogin = async () => {
-    if (!Number || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+  if (!email || !password) {
+      showModal("Error Please fill in all fields");
       return;
     }
 
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert('Success', 'Logged in successfully!');
-    }, 1500);
+
+    const result = await login({ email, password });
+
+    setIsLoading(false);
+
+
+    
+   if (result.success) {
+      navigation.navigate('HomeScreen');
+    }
   };
 
   return (
@@ -61,14 +71,14 @@ const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) 
         <View style={styles.form}>
           {/* Number Input */}
           <View style={styles.inputContainer}>
-            <Icon name="phone" size={20} color="#666" style={styles.inputIcon} />
+            <Icon name="envelope" size={20} color="#666" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="phone number"
+              placeholder="Enter Email"
               placeholderTextColor="#999"
-              value={Number}
-              onChangeText={setnumber}
-              keyboardType='numeric' 
+              value={email}
+              onChangeText={setemail}
+              keyboardType='email-address' 
              autoCapitalize="none"
             />
           </View>
@@ -98,7 +108,7 @@ const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) 
 
           {/* Forgot Password */}
           <TouchableOpacity
-          //  onPress={() => navigation.navigate('ForgotPassword')}
+           onPress={() => navigation.navigate('Forgotpass')}
             style={styles.forgotPassword}
           >
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
@@ -128,21 +138,21 @@ const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) 
           </View>
         </View>
 
-        {/* Social Login
+        {/* Social Login */}
         <View style={styles.socialContainer}>
           <Text style={styles.socialText}>Or continue with</Text>
           <View style={styles.socialButtons}>
             <TouchableOpacity style={styles.socialButton}>
-              <Icon name="google" size={20} color="#DB4437" />
+              <Icon name="google" size={40} color="#ec2816ff" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton}>
-              <Icon name="facebook" size={20} color="#4267B2" />
+              <Icon name="facebook-f" size={40} color="#4267B2" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton}>
-              <Icon name="apple" size={20} color="#000" />
+              <Icon name="apple" size={40} color="#ec2816ff" />
             </TouchableOpacity>
           </View>
-        </View> */}
+        </View>
       </ScrollView>
    // </KeyboardAvoidingView>
   );
@@ -150,3 +160,5 @@ const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) 
 
 
 export default LoginScreen;
+
+

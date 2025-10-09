@@ -9,6 +9,7 @@ import {
     ScrollView,
     Keyboard,
 } from 'react-native';
+
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
@@ -24,7 +25,7 @@ interface Props {
 }
 
 const OTPVerificationScreen = ({ navigation, route }: Props) => {
-    const { number, purpose } = route.params;
+    const { email, purpose } = route.params;
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [isLoading, setIsLoading] = useState(false);
     const [timer, setTimer] = useState(60);
@@ -82,7 +83,7 @@ const OTPVerificationScreen = ({ navigation, route }: Props) => {
             setIsLoading(false);
             if (purpose === 'signup') {
                 Alert.alert('Success', 'Account created successfully!');
-                navigation.navigate('Login');
+                navigation.navigate('HomeScreen');
             } else {
                 Alert.alert('Success', 'Password reset successful!');
                 navigation.navigate('Login');
@@ -109,7 +110,7 @@ const OTPVerificationScreen = ({ navigation, route }: Props) => {
                 <Text style={styles.subtitle}>
                     We've sent a 6-digit verification code to
                 </Text>
-                <Text style={styles.email}>{number}</Text>
+                <Text style={styles.email}>{email}</Text>
             </View>
          
 

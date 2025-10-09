@@ -24,6 +24,7 @@ const TermsScreen = ({ navigation }: Props) => {
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
     
+
     const handleEmailPress = () => {
         Linking.openURL('mailto:hnshnbn@gmail.com?subject=ChatBox Support');
     };
@@ -77,6 +78,7 @@ const TermsScreen = ({ navigation }: Props) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        
         {/* App Logo/Header */}
         <View style={styles.appHeader}>
           <View style={styles.logoContainer}>

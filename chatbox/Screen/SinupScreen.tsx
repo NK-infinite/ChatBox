@@ -11,11 +11,16 @@ import {
     ScrollView,
     Dimensions,
 } from 'react-native';
+
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { RootStackParamList } from '../Navigations/StackNavigations';
-import LinearGradient from 'react-native-linear-gradient';
 import styles from '../styles/Login_Singup';
+import auth from '@react-native-firebase/auth';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import singup from '../Firebase/singup';
+import EmailVerificationScreen from './EmailVericationScreen';
+import { useModal } from '../Components/ModalComponet';
 type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signup'>;
 
 // interface Props {
@@ -24,42 +29,61 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
     
     const SignupScreen = ({ navigation }: { navigation: SignupScreenNavigationProp }) => {
         const [name, setName] = useState('');
-        const [number, setEmail] = useState('');
+        const [email, setemail] = useState('');
         const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const screenWidth = Dimensions.get("window").width;
+        const [confirmPassword, setConfirmPassword] = useState('');
+        const [showPassword, setShowPassword] = useState(false);
+        const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+        const [isLoading, setIsLoading] = useState(false);
+        const screenWidth = Dimensions.get("window").width;
         const isFolded = screenWidth > 600;
+const { showModal } = useModal(); 
     const handleSignup = async () => {
-        if (!name || !number || !password || !confirmPassword) {
-            Alert.alert('Error', 'Please fill in all fields');
+        if (!name || !email || !password || !confirmPassword) {
+            showModal('Error, Please fill in all fields');
             return;
         }
 
         if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match');
+            showModal('Error, Passwords do not match');
             return;
         }
 
         if (password.length < 6) {
-            Alert.alert('Error', 'Password must be at least 6 characters');
+            showModal('Error Password must be at least 6 characters');
             return;
         }
 
         setIsLoading(true);
         // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false);
-            navigation.navigate('OTPVerification', { number, purpose: 'signup' });
-        }, 1500);
-    };
+      try {
+        // Optionally, update display name
+        
+        setIsLoading(true);
+        
+        const result = await singup({ name, email, password })    
+        if (result.success) {
+
+            if(result.verifi){
+            navigation.navigate('EmailVerification');
+        }
+
+         showModal('Success , Account created successfully!');
+        }
+
+        setIsLoading(false);
+        // Navigate to Home or Login screen after successful signup
+        
+    } catch (error: any) {
+        setIsLoading(false);
+        console.log('Email signup error:', error);
+    }
+};
+
 
     return (
-        <KeyboardAvoidingView
+<SafeAreaView
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ScrollView
                 keyboardShouldPersistTaps="handled"
@@ -68,7 +92,7 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
                  colors={[ '#007AFF' ,  '#6C63FF']}
                  style={StyleSheet.absoluteFill}
                /> */}
-                <View style={styles.header}>
+                <View style={[styles.header , isFolded ? {marginBottom: 0} : {marginBottom: 20}]}>
                     <Text style={styles.title}>Create Account</Text>
                     <Text style={styles.subtitle}>Sign up to get started</Text>
                 </View>
@@ -90,14 +114,14 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
 
                     {/* numer Input */}
                     <View style={styles.inputContainer}>
-                        <Icon name="phone" size={20} color="#666" style={styles.inputIcon} />
+                        <Icon name="envelope" size={20} color="#666" style={styles.inputIcon} />
                         <TextInput
                             style={styles.input}
-                            placeholder="phone number"
+                            placeholder="Enter Email"
                             placeholderTextColor="#999"
-                            value={number}
-                            keyboardType='numeric'
-                            onChangeText={setEmail}
+                            value={email}
+                            keyboardType='email-address'
+                            onChangeText={setemail}
                         />
                     </View>
 
@@ -161,7 +185,7 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
                     </TouchableOpacity>
 
                     {/* Login Link */}
-                    <View style={styles.loginContainer}>
+                    <View style={[styles.loginContainer , isFolded ? { marginBottom:-30 } : {marginBottom:0}] }>
                         <Text style={styles.loginText}>Already have an account? </Text>
                         <TouchableOpacity
                             onPress={() => navigation.navigate('Login')}
@@ -170,23 +194,37 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
                         </TouchableOpacity>
                     </View>
                 </View>
+                
+ <View style={styles.socialContainer}>
+          <Text style={styles.socialText}>Or continue with</Text>
+          <View style={styles.socialButtons}>
+            <TouchableOpacity style={styles.socialButton}>
+              <Icon name="google" size={30} color="#ec2816ff" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialButton}>
+              <Icon name="facebook-f" size={30} color="#4267B2" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialButton}>
+              <Icon name="apple" size={30} color="#ec2816ff" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
                 {/* Terms */}
-                <View style={isFolded ?  { flexDirection:'row'  , alignItems:'center', justifyContent:'center' } : {flexDirection:'column'} } >
-                     <Text style={styles.termsText}> By signing up, you agree to our</Text>
+                <View style={isFolded ?  { flexDirection:'row'  , alignItems:'center',  justifyContent:'center' , marginTop:15 } : {flexDirection:'column', marginTop:40} } >
+                     <Text style={[styles.termsText  , isFolded ? {marginRight:5}: {marginBottom:5} ]}> By signing up, you agree to our</Text>
                     <TouchableOpacity
                         style={styles.termsButton}
                         onPress={() => navigation.navigate('terms')}
                     >
-                       
                             <Text style={styles.termsLink}>Terms of Service
                                 <Text> and </Text>
                                 <Text style={styles.termsLink}>Privacy Policy</Text></Text>
                     </TouchableOpacity>
                 </View>
-
+                
             </ScrollView>
-        </KeyboardAvoidingView>
+</SafeAreaView>
     );
 };
 

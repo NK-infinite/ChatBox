@@ -14,12 +14,11 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom:5,
     // color optional, screen-specific
   },
   subtitle: {
@@ -27,7 +26,7 @@ const styles = StyleSheet.create({
     // color optional
   },
   form: {
-     marginBottom: 30,
+     marginBottom: 40,
     // backgroundColor: '#fff',
     // borderRadius: 20,
      padding: 20,
@@ -40,11 +39,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    
    // backgroundColor: '#f3f3f3',
     backgroundColor: 'white',
     borderRadius: 12,
-    marginBottom: 20,
+    marginBottom: 10,
     paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: '#ddd',
@@ -75,6 +73,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
+  
   loginButton: {
     backgroundColor: '#6C63FF',
     paddingVertical: 16,
@@ -87,22 +86,23 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 7,
   },
+
   loginButtonDisabled: {
     backgroundColor: '#ccc',
   },
+
   loginButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
 
-     
   signupButton: {
     backgroundColor: '#6C63FF',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25,
@@ -122,20 +122,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   loginText: {
     color: '#666',
     fontSize: 14,
   },
+
   loginLink: {
     color: '#6C63FF',
     fontSize: 14,
     fontWeight: 'bold',
   },
+
   signupContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   signupText: {
     color: '#666',
     fontSize: 14,
@@ -156,8 +160,8 @@ const styles = StyleSheet.create({
   //  fontWeight: '500',
   textDecorationLine: 'underline',
   },
+  
    termsButton: {
-
 //         justifyContent: 'center',
        alignItems: 'center',
 
@@ -165,6 +169,32 @@ const styles = StyleSheet.create({
 // textAlign:'center',
 //         paddingVertical: 12,
      },
+     socialContainer:{
+      //flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+     },
+socialText: {
+      color: '#666',
+      fontSize: 14,
+      fontWeight: '500',
+},
+     socialButtons: {
+      marginTop: 10,
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+     },
+   socialButton: {
+    width: 60,
+    height: 60,
+    marginHorizontal: 10,
+     borderWidth: 1,
+     borderColor: '#ddd',
+     borderRadius: 50,
+     justifyContent: 'center',
+     alignItems: 'center',
+   }
 });
 
 export default styles;
