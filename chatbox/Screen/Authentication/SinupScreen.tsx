@@ -14,13 +14,13 @@ import {
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import { RootStackParamList } from '../Navigations/StackNavigations';
-import styles from '../styles/Login_Singup';
+import { RootStackParamList } from '../../Navigations/StackNavigations';
+import styles from '../../styles/Login_Singup';
 import auth from '@react-native-firebase/auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import singup from '../Firebase/singup';
+import singup from '../../Firebase/singup';
 import EmailVerificationScreen from './EmailVericationScreen';
-import { useModal } from '../Components/ModalComponet';
+import { useModal } from '../../Components/ModalComponet';
 type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signup'>;
 
 // interface Props {
@@ -37,18 +37,16 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
         const [isLoading, setIsLoading] = useState(false);
         const screenWidth = Dimensions.get("window").width;
         const isFolded = screenWidth > 600;
-const { showModal } = useModal(); 
-    const handleSignup = async () => {
-        if (!name || !email || !password || !confirmPassword) {
+        const { showModal } = useModal(); 
+        const handleSignup = async () => {
+            if (!name || !email || !password || !confirmPassword) {
             showModal('Error, Please fill in all fields');
             return;
         }
-
         if (password !== confirmPassword) {
             showModal('Error, Passwords do not match');
             return;
         }
-
         if (password.length < 6) {
             showModal('Error Password must be at least 6 characters');
             return;
@@ -61,7 +59,7 @@ const { showModal } = useModal();
         
         setIsLoading(true);
         
-        const result = await singup({ name, email, password })    
+        const result = await singup({ name, email, password }  , showModal)    
         if (result.success) {
 
             if(result.verifi){
@@ -217,9 +215,11 @@ const { showModal } = useModal();
                         style={styles.termsButton}
                         onPress={() => navigation.navigate('terms')}
                     >
-                            <Text style={styles.termsLink}>Terms of Service
+                            <Text style={styles.termsLink}>
+                                Terms of Service
                                 <Text> and </Text>
-                                <Text style={styles.termsLink}>Privacy Policy</Text></Text>
+                                <Text style={styles.termsLink}>Privacy Policy</Text>
+                                </Text>
                     </TouchableOpacity>
                 </View>
                 

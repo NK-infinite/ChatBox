@@ -1,0 +1,8 @@
+{
+  "react-native": {
+    "database_persistence_enabled": true,
+    "database_auto_import_enabled": true,
+    "storage_auto_import_enabled": true,
+    "storage_persistence_enabled": true
+  }
+}

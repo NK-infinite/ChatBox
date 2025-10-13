@@ -13,8 +13,8 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import styles from '../styles/Otpverifiy';
-import { RootStackParamList } from '../Navigations/StackNavigations';
+import styles from '../../styles/Otpverifiy';
+import { RootStackParamList } from '../../Navigations/StackNavigations';
 
 type OTPVerificationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'OTPVerification'>;
 type OTPVerificationScreenRouteProp = RouteProp<RootStackParamList, 'OTPVerification'>;

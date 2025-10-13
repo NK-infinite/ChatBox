@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import { RootStackParamList } from '../Navigations/StackNavigations';
+import { RootStackParamList } from '../../Navigations/StackNavigations';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type TermsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'terms'>;
@@ -24,9 +24,8 @@ const TermsScreen = ({ navigation }: Props) => {
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
     
-
     const handleEmailPress = () => {
-        Linking.openURL('mailto:hnshnbn@gmail.com?subject=ChatBox Support');
+        Linking.openURL('mailto:nikhilkeshvala1@gmail.com?subject=ChatBox Support');
     };
     
     const handleContinue = () => {
@@ -56,8 +55,6 @@ const TermsScreen = ({ navigation }: Props) => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <SafeAreaView style={{ flex: 1, }}>
-
-  
     <View style={styles.container}>
      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       

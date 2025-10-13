@@ -2,30 +2,31 @@
 import auth from '@react-native-firebase/auth';
 import { Alert } from 'react-native';
 import { useModal } from '../Components/ModalComponet';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LoginData {
   email: string;
   password: string;
 }
-
-const login = async ({ email, password }: LoginData): Promise<{ success: boolean }> => {
-  const { showModal } = useModal(); 
+const login = async ({ email, password }: LoginData ,showModal: (msg: string) => void) => {
+ // const { showModal } = useModal(); 
   try {
     await auth().signInWithEmailAndPassword(email, password);
 
-    Alert.alert('Success', 'Logged in successfully!');
+    showModal('Success , Logged in successfully!');
+    await AsyncStorage.setItem('isLoggedIn', 'true');
     return { success: true };
   } catch (error: any) {
     console.log('Email login error:', error);
 
     if (error.code === 'auth/user-not-found') {
-      Alert.alert('Error', 'No user found with this email');
+      showModal('Error , No user found with this email');
     } else if (error.code === 'auth/wrong-password') {
-      Alert.alert('Error', 'Incorrect password');
+      showModal('Error , Incorrect password');
     } else if (error.code === 'auth/invalid-email') {
-      Alert.alert('Error', 'Invalid email address');
+      showModal('Error , Invalid email address');
     } else {
-      Alert.alert('Error', 'Failed to login. Please try again.');
+      showModal('Error , Failed to login. Please try again.');
     }
 
     return { success: false };

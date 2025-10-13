@@ -13,13 +13,13 @@ import {
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import { RootStackParamList } from '../Navigations/StackNavigations';
+import { RootStackParamList } from '../../Navigations/StackNavigations';
+import styles from '../../styles/Login_Singup';
+import login from '../../Firebase/login';
+import ModalProvider, { useModal }  from '../../Components/ModalComponet';
+import Social from '../../Components/SocialAthu';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import styles from '../styles/Login_Singup';
-
-import login from '../Firebase/login';
-
-import ModalProvider, { useModal }  from '../Components/ModalComponet';
  type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 // interface Props {
@@ -31,38 +31,36 @@ const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) 
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
- const { showModal } = useModal(); 
-
+  const { showModal } = useModal(); 
 
   const handleLogin = async () => {
   if (!email || !password) {
       showModal("Error Please fill in all fields");
       return;
     }
-
     setIsLoading(true);
-
-    const result = await login({ email, password });
-
+    const result = await login({ email, password } ,showModal);
     setIsLoading(false);
-
-
-    
    if (result.success) {
+     await AsyncStorage.setItem('isLoggedIn', 'true');
       navigation.navigate('HomeScreen');
     }
   };
+
 
   return (
     // <KeyboardAvoidingView
     //   style={styles.container}
     //   behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     // >
+    
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+
        {/* <LinearGradient
         colors={[ '#007AFF' ,  '#6C63FF']}
         style={StyleSheet.absoluteFill}
       /> */}
+
         <View style={styles.header}>
           <Text style={styles.title}>Welcome Back</Text>
           <Text style={styles.subtitle}>Sign in to your account</Text>
@@ -137,28 +135,11 @@ const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) 
             </TouchableOpacity>
           </View>
         </View>
+   <Social navigation={navigation} />
 
-        {/* Social Login */}
-        <View style={styles.socialContainer}>
-          <Text style={styles.socialText}>Or continue with</Text>
-          <View style={styles.socialButtons}>
-            <TouchableOpacity style={styles.socialButton}>
-              <Icon name="google" size={40} color="#ec2816ff" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
-              <Icon name="facebook-f" size={40} color="#4267B2" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
-              <Icon name="apple" size={40} color="#ec2816ff" />
-            </TouchableOpacity>
-          </View>
-        </View>
       </ScrollView>
    // </KeyboardAvoidingView>
   );
 };
 
-
 export default LoginScreen;
-
-

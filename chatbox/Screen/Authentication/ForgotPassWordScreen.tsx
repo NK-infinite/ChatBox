@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
-import styles from '../styles/Login_Singup';
-import forgotPassword from '../Firebase/forgotpassword';
+import styles from '../../styles/Login_Singup';
+import forgotPassword from '../../Firebase/forgotpassword';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../Navigations/StackNavigations';
-import { useModal } from '../Components/ModalComponet';
+import { RootStackParamList } from '../../Navigations/StackNavigations';
+import { useModal } from '../../Components/ModalComponet';
 
 type ForgotPasswordNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -28,8 +28,9 @@ const { showModal } = useModal();
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}
+       keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <Text style={styles.title}>Reset Password</Text>
           <Text style={styles.subtitle}>Enter your email to receive a reset link</Text>
@@ -65,7 +66,7 @@ const { showModal } = useModal();
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
