@@ -1,47 +1,57 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, StatusBar } from "react-native";
+import { View, Text, FlatList, Image, TouchableOpacity, StatusBar } from "react-native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigations/StackNavigations';
-import fetchDataOnce from "../Firebase/homedata";
+import fetchUserByUid from "../Firebase/homedata";
 import { SafeAreaView } from "react-native-safe-area-context";
-import  Icon from "react-native-vector-icons/FontAwesome6";
+import Icon from "react-native-vector-icons/FontAwesome6";
 import { getAuth } from "@react-native-firebase/auth";
-import LinearGradient from "react-native-linear-gradient";
 import styles from "../styles/Home_Connect";
-import { Button } from "react-native-paper";
+
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'HomeScreen'>;
 
 interface User {
-    image: string;
-    name: string;
-    email: string;
-    phone: string;
-    Uid: string;
+  uid: string;
+  image?: string;
+  name: string;
+  email: string;
+  phone: string;
+  connections?: Record<string, boolean>;
 }
 
-
 const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) => {
-    const [users, setUsers] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [friends, setFriends] = useState<User[]>([]);
   const auth = getAuth();
-  const currentUid = auth.currentUser?.uid;
-    useEffect(() => {
-        const getUsers = async () => {
-            const data = await fetchDataOnce();
-            if (data) {
-                const userArray: User[] = Object.keys(data).map(key => ({
-                    image: data[key].image,
-                    name: data[key].name,
-                    email: data[key].email,
-                    phone: data[key].phone,
-                    Uid: data[key].uid
-                }));
-                setUsers(userArray);
-            }
-        };
-        getUsers();
-    }, []);
+  const currentUid = auth?.currentUser?.uid;
 
-    return (
+  useEffect(() => {
+    const loadData = async () => {
+      if (!currentUid) return;
+
+      // 1️⃣ Fetch current user
+      const userData = await fetchUserByUid(currentUid);
+      if (!userData) return;
+      setCurrentUser(userData);
+
+      // 2️⃣ Fetch friends
+      const connections = userData.connections || {};
+      const friendList: User[] = [];
+
+      for (const uid in connections) {
+        if (connections[uid]) {
+          const friendData = await fetchUserByUid(uid);
+          if (friendData) friendList.push(friendData);
+        }
+      }
+
+      setFriends(friendList);
+    };
+
+    loadData();
+  }, [currentUid]);
+
+  return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#6C63FF" />
 
@@ -53,24 +63,20 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
         </TouchableOpacity>
       </View>
 
-      {/* User List */}
+      {/* Friends List */}
       <FlatList
-        data={users}
-        keyExtractor={(item, index) => item.Uid?.toString() || index.toString()}
+        data={friends}
+        keyExtractor={(item) => item.uid}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
             activeOpacity={0.8}
-            // onPress={() => navigation.navigate('ChatScreen', { user: item })}
+            onPress={() => navigation.navigate('chatScreen', { chatId: item.uid, phone: item.phone })}
           >
             <View style={styles.cardContent}>
               <Image
-                source={
-                  item.image
-                    ? { uri: `data:image/jpeg;base64,${item.image}` }
-                    : require("../assets/icon/Profile.jpg")
-                }
+                source={item.image ? { uri: `data:image/jpeg;base64,${item.image}` } : require("../assets/icon/Profile.jpg")}
                 style={styles.avatar}
               />
               <View style={styles.textContainer}>
@@ -78,7 +84,10 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
                 <Text style={styles.email}>{item.email}</Text>
                 <Text style={styles.phone}>{item.phone}</Text>
               </View>
-              <TouchableOpacity style={styles.chatButton}>
+              <TouchableOpacity
+                style={styles.chatButton}
+                onPress={() => navigation.navigate('chatScreen', { chatId: item.uid, phone: item.phone })}
+              >
                 <Icon name="message" size={22} color="#fff" />
               </TouchableOpacity>
             </View>
@@ -86,18 +95,15 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
         )}
       />
 
-      {/* Floating Action Button */}
+      {/* Floating Add Friend Button */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => navigation.navigate("ConnectScreen")}
       >
         <Icon name="user-plus" size={28} color="#fff" />
       </TouchableOpacity>
-      {/* <Button children="Logout" onPress={() =>  navigation.navigate("ProfileScreen")} /> */}
     </SafeAreaView>
   );
 };
 
-
 export default HomeScreen;
-

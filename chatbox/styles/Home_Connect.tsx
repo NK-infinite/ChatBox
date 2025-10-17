@@ -3,7 +3,8 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: "#F4F4FF", // soft background to make purple pop
+        backgroundColor: "#F4F4FF",
+        marginBottom:35,
     },
     header: {
         backgroundColor: "#6C63FF",
@@ -35,6 +36,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 18,
         marginVertical: 8,
+
         shadowColor: "#6C63FF",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
@@ -42,6 +44,8 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     cardContent: {
+        backgroundColor: "#fff",
+        borderRadius: 18,
         flexDirection: "row",
         alignItems: "center",
         padding: 15,
@@ -110,8 +114,26 @@ const styles = StyleSheet.create({
     },
     container: {
         marginVertical: 15,
-        marginHorizontal: 12,
+        marginHorizontal: 20,
     },
+     requestName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    requestPhone: {
+        fontSize: 13,
+        color: '#666',
+    },
+    searchButton: {
+       // backgroundColor: '#6C63FF',
+        borderRadius: 5,
+        padding: 10,
+        marginLeft: 10,
+    },
+    
+   
 });
+
 
 export default styles

@@ -119,7 +119,7 @@ const ProfileScreen = ({ navigation }: { navigation: ProfileScreenNavigationProp
     email.toLowerCase();
     try {
       const createdAt = "Date:" + new Date().toLocaleDateString() + ' Time:' + new Date().toLocaleTimeString();
-      await saveUserProfile(phone, { image, name, Bio, phone, email, createdAt });
+      await saveUserProfile(user.uid, { image, name, Bio, phone, email, createdAt });
 
       Alert.alert('Success', 'Profile saved successfully!');
       console.log('Profile saved successfully!');

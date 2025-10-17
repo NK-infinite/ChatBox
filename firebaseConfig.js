@@ -19,3 +19,7 @@ if (!firebase.apps.length) {
 }
 
 export default firebase;
+
+
+
+export const databaseURL = 'https://chatbox-b5748-default-rtdb.asia-southeast1.firebasedatabase.app';

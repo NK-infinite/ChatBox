@@ -8,17 +8,17 @@ import {
 } from 'react-native-safe-area-context';
 
 import StackNavigations from './chatbox/Navigations/StackNavigations';
-import ModalProvider  from './chatbox/Components/ModalComponet';
+import ModalProvider from './chatbox/Components/ModalComponet';
 
 function App() {
-const isDarkMode = useColorScheme() === 'dark';
+  const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
- <ModalProvider >
-      <StackNavigations  />
- </ModalProvider>
+      <ModalProvider >
+        <StackNavigations />
+      </ModalProvider>
     </SafeAreaProvider>
   );
 }

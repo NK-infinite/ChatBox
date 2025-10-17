@@ -10,6 +10,7 @@ import ProfileScreen from '../Screen/ProfileScreen';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ConnectScreen from '../Screen/ConnectScreen';
+import chatScreen from '../Screen/chatScreen';
 
 export type RootStackParamList = {
     HomeScreen: undefined;
@@ -21,24 +22,25 @@ export type RootStackParamList = {
     OTPVerification: { email: string; purpose: 'signup' | 'reset', confirmation: any };
     EmailVerification: undefined;
     ConnectScreen: undefined;
+    chatScreen: { chatId: string, phone: string };
 };
 
 
 const StackNavigations = () => {
- const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const loggedIn = await AsyncStorage.getItem('isLoggedIn');
-      setIsLoggedIn(loggedIn === 'true');
-    };
-    checkLoginStatus();
-  }, []);
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            const loggedIn = await AsyncStorage.getItem('isLoggedIn');
+            setIsLoggedIn(loggedIn === 'true');
+        };
+        checkLoginStatus();
+    }, []);
 
 
-  if (isLoggedIn === null) {
-    return null; // ya <ActivityIndicator size="large" /> while loading
-  }    const Stack = createNativeStackNavigator<RootStackParamList>();
+    if (isLoggedIn === null) {
+        return null; // ya <ActivityIndicator size="large" /> while loading
+    } const Stack = createNativeStackNavigator<RootStackParamList>();
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "Login"}>
@@ -64,19 +66,19 @@ const StackNavigations = () => {
                             headerShown: false
                         }
                     }
-                     component={TermsScreen} />
-                
+                    component={TermsScreen} />
+
                 <Stack.Screen
                     name="ProfileScreen"
                     options={
                         {
-                            headerShown:false
+                            headerShown: false
                         }
                     }
-                    component =  {ProfileScreen}/>
+                    component={ProfileScreen} />
 
                 <Stack.Screen
-                 options={
+                    options={
                         {
                             headerShown: false
                         }
@@ -95,12 +97,18 @@ const StackNavigations = () => {
                     }}
                     name="Forgotpass"
                     component={ForgotPasswordScreen} />
-                    <Stack.Screen
+                <Stack.Screen
                     options={{
-                        headerShown: false 
+                        headerShown: false
                     }}
                     name="ConnectScreen"
                     component={ConnectScreen} />
+                <Stack.Screen
+                    options={{
+                        headerShown: false
+                    }}
+                    name='chatScreen'
+                    component={chatScreen} />
 
             </Stack.Navigator>
         </NavigationContainer>
