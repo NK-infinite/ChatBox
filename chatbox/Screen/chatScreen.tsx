@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { TextInput } from 'react-native-paper';
 import { getDatabase, ref, onValue, push, get } from '@react-native-firebase/database';
 import { getAuth } from '@react-native-firebase/auth';
 import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { ScrollView } from 'react-native';
 
 interface Message {
   id: string;
@@ -23,7 +24,7 @@ interface ChatScreenProps {
   }
 }
 
-const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
+const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
   const { chatId } = route?.params;
   const phone = route?.params?.phone;
   console.log(chatId, phone);
@@ -116,9 +117,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
     // Save message to receiver's node
     const receiverRef = ref(db, `users/${receiverId}/messages/${senderId}`);
     push(receiverRef, messageData);
-
     console.log("Message sent:", messageData);
-
     setText("");
   };
 
@@ -138,49 +137,55 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
     </View>
   )
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
-      <View style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
+     
+        <View style={styles.container}>
 
-        {/* Header */}
+          {/* Header */}
 
-        <View style={styles.header}>
-          {otherProfile?.image ? (
-            <Image source={{ uri: `data:image/jpeg;base64, ${otherProfile.image}` }} style={styles.userImage} />
-          ) : (
-            <View style={styles.placeholderImage}></View>
-          )}
-          <Text style={styles.title}>{otherProfile?.name || "User"}</Text>
-        </View>
+          <View style={styles.header}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
 
-
-
-        {/* Chat Content */}
-
-
-        <FlatList
-          data={messages}
-          keyExtractor={item => item.id}
-          renderItem={renderItem}
-          inverted
-          contentContainerStyle={{ padding: 10 }}
-        />
-
-        {/* Bottom Input Bar */}
-        <View style={styles.bottom}>
-          <Icon name="plus" size={30} color="#6C63FF" style={{ marginRight: 10 }} />
-          <View style={styles.inputContainer}>
-            <TextInput
-              placeholder="Type a message"
-              style={styles.textInput}
-              value={text}
-              onChangeText={setText}
-            />
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Icon name='arrow-left' size={25} color={'#fff'} />
+              </TouchableOpacity>
+              {otherProfile?.image ? (
+                <Image source={{ uri: `data:image/jpeg;base64, ${otherProfile.image}` }} style={styles.userImage} />
+              ) : (
+                <View style={styles.placeholderImage}></View>
+              )}
+            </View>
+            <Text style={styles.title}>{otherProfile?.name || "User"}</Text>
           </View>
-          <TouchableOpacity onPress={sendMessage}>
-            <Icon name="paper-plane" size={30} color="#6C63FF" style={{ marginLeft: 10 }} />
-          </TouchableOpacity>
+
+          {/* Chat Content */}
+
+          <FlatList
+            data={messages}
+            keyExtractor={item => item.id}
+            renderItem={renderItem}
+            inverted
+            keyboardShouldPersistTaps='never'
+            contentContainerStyle={{ padding: 10, }} // add bottom space
+          />
+
+          {/* Bottom Input Bar */}
+          <View style={styles.bottom}>
+            <Icon name="plus" size={30} color="#6C63FF" style={{ marginRight: 10 }} />
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholder="Type a message"
+                style={styles.textInput}
+                value={text}
+                onChangeText={setText}
+              />
+            </View>
+            <TouchableOpacity onPress={sendMessage}>
+              <Icon name="paper-plane" size={30} color="#6C63FF" style={{ marginLeft: 10 }} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+
     </SafeAreaView>
   );
 }
@@ -195,7 +200,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: "#6C63FF",
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,

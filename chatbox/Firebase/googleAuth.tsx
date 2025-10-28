@@ -27,7 +27,7 @@ GoogleSignin.configure({
     return userCredential.user; // Firebase user object
   } catch (error) {
     console.log('Google Login Error:', error);
-    throw error;
+    //throw error;
   }
 
 };

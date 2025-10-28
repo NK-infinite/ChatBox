@@ -43,7 +43,7 @@ const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) 
     setIsLoading(false);
    if (result.success) {
      await AsyncStorage.setItem('isLoggedIn', 'true');
-      navigation.navigate('HomeScreen');
+      navigation.replace('HomeScreen');
     }
   };
 
@@ -135,6 +135,7 @@ const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) 
             </TouchableOpacity>
           </View>
         </View>
+        
    <Social navigation={navigation} />
 
       </ScrollView>

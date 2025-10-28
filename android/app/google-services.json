@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "96012869985",
+    "firebase_url": "https://chatbox-b5748-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "chatbox-b5748",
     "storage_bucket": "chatbox-b5748.firebasestorage.app"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "96012869985-usf0798528lp8vpab12tv789cnlqtedn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chatbox",
+            "certificate_hash": "28d2589980dcf870c073de1889798ed306dfbbf9"
+          }
+        },
         {
           "client_id": "96012869985-labh4fpmbme61em0jr496n4hg6bki1bm.apps.googleusercontent.com",
           "client_type": 3

@@ -22,7 +22,7 @@ const EmailVerificationScreen = ({ navigation }: { navigation: EmailVerification
     const user = auth()?.currentUser;
     await user?.reload();
     if (user?.emailVerified) {
-      navigation.navigate('ProfileScreen');
+      navigation.replace('UsernameScreen');
       showModal('Verified , Your email is verified! Welcome.');
     } else {
       showModal('Not Verified , Please verify your email first.');

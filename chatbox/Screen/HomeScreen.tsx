@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { getAuth } from "@react-native-firebase/auth";
 import styles from "../styles/Home_Connect";
+import { getDatabase, onValue, ref } from "@react-native-firebase/database";
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'HomeScreen'>;
 
@@ -24,17 +25,19 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
   const [friends, setFriends] = useState<User[]>([]);
   const auth = getAuth();
   const currentUid = auth?.currentUser?.uid;
-
   useEffect(() => {
-    const loadData = async () => {
-      if (!currentUid) return;
+    if (!currentUid) return;
 
-      // 1️⃣ Fetch current user
-      const userData = await fetchUserByUid(currentUid);
-      if (!userData) return;
+    const db = getDatabase();
+    const userRef = ref(db, `/users/${currentUid}`);
+
+    const unsubscribe = onValue(userRef, async (snapshot) => {
+      if (!snapshot.exists()) return;
+
+      const userData = { uid: currentUid, ...snapshot.val() };
       setCurrentUser(userData);
 
-      // 2️⃣ Fetch friends
+      // Fetch friends LIVE
       const connections = userData.connections || {};
       const friendList: User[] = [];
 
@@ -46,9 +49,10 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
       }
 
       setFriends(friendList);
-    };
+    });
 
-    loadData();
+    // 🧹 Cleanup listener when screen unmounts
+    return () => unsubscribe();
   }, [currentUid]);
 
   return (
@@ -58,7 +62,7 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>ChatBox</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("ProfileScreen")}>
+        <TouchableOpacity onPress={() => navigation.navigate("EditProfileScreen")}>
           <Icon name="user-circle" size={34} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -79,11 +83,13 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
                 source={item.image ? { uri: `data:image/jpeg;base64,${item.image}` } : require("../assets/icon/Profile.jpg")}
                 style={styles.avatar}
               />
+
               <View style={styles.textContainer}>
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.email}>{item.email}</Text>
                 <Text style={styles.phone}>{item.phone}</Text>
               </View>
+
               <TouchableOpacity
                 style={styles.chatButton}
                 onPress={() => navigation.navigate('chatScreen', { chatId: item.uid, phone: item.phone })}
@@ -94,6 +100,7 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
           </TouchableOpacity>
         )}
       />
+                   
 
       {/* Floating Add Friend Button */}
       <TouchableOpacity
@@ -102,6 +109,7 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
       >
         <Icon name="user-plus" size={28} color="#fff" />
       </TouchableOpacity>
+      
     </SafeAreaView>
   );
 };

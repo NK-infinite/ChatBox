@@ -1,43 +1,48 @@
 // firebase/databaseService.js
 import { getApp } from '@react-native-firebase/app';
-// set के बजाय update का उपयोग करें ताकि हम एक साथ कई स्थानों को अपडेट कर सकें
 import { getDatabase, ref, set, update } from '@react-native-firebase/database'; 
 import { Alert } from 'react-native';
 
 const databaseURL = 'https://chatbox-b5748-default-rtdb.asia-southeast1.firebasedatabase.app'; // <-- अपना URL यहाँ डाल
 
-export const saveUserProfile = async (
-  uid: string,
-  profile: {
-    image: any;
-    name: string;
-    Bio: string;
-    phone: string; // Ensure phone is always part of the profile
-    email: string;
-    createdAt: string;
-  }
-) => {
+export const saveUserProfile = async (profile: {
+  uid: string;
+  image?: string | null;
+  name?: string;
+  Bio?: string;
+  phone?: string;
+  email?: string;
+  createdAt?: string;
+}) => {
   console.log('📥 Calling saveUserProfile...');
- 
+
   try {
-    const app = getApp();
-    const db = getDatabase(app, databaseURL);
+    const db = getDatabase();
+    const userRef = ref(db, `users/${profile.uid}`);
 
-    const updates: Record<string, any> = {}; 
+    const updateData: Record<string, any> = {};
 
-    updates[`users/${uid}`] = profile;
-   
- 
-    if (profile.phone && profile.phone.length > 0) { 
-      updates[`phoneNumbersToUids/${profile.phone}`] = uid;
-     
+    if (profile.image !== undefined) updateData.image = profile.image;
+    if (profile.name) updateData.name = profile.name.trim();
+    if (profile.Bio) updateData.bio = profile.Bio.trim(); // ✅ Correct name
+    if (profile.phone) updateData.phone = profile.phone;
+    if (profile.email) updateData.email = profile.email;
+    if (profile.createdAt) updateData.createdAt = profile.createdAt;
+
+    // ✅ Only update specific fields, keep username safe
+    await update(userRef, updateData);
+
+    // ✅ Keep phone mapping separate
+    if (profile.phone) {
+      await update(ref(db), {
+        [`phoneNumbersToUids/${profile.phone}`]: profile.uid,
+      });
     }
-    await update(ref(db), updates); 
 
-    console.log('✅ Profile saved and phone index updated successfully!');
-    Alert.alert('Success', 'Profile saved successfully!');
-  } catch (error) {
-    console.error('❌ Database save error:', error, '; Error message:', (error as Error).message);
-    Alert.alert('Error', 'Profile save failed: ' + (error as Error).message);
+    console.log('✅ Profile updated successfully');
+    Alert.alert('Success', 'Profile updated successfully!');
+  } catch (err) {
+    console.error('❌ Database save error', err);
+    Alert.alert('Error', 'Profile update failed: ' + err);
   }
 };

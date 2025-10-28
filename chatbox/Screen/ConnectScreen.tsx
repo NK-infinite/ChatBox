@@ -76,43 +76,60 @@ const ConnectScreen = () => {
     }, [currentUser]);
 
     // 3️⃣ Search user by phone
-    const fetchUserByPhone = async () => {
-        if (!phone) {
-            Alert.alert("Input Required", "Enter phone number!");
-            return;
-        }
-        setLoading(true);
-        setSearchResult(null);
+  const fetchUserByPhone = async () => {
+  if (!phone.trim()) {
+    Alert.alert("Input Required", "Enter phone number or @username!");
+    return;
+  }
 
-        try {
-            const phoneSnap = await get(ref(db, `phoneNumbersToUids/${phone}`));
-            if (!phoneSnap.exists()) {
-                Alert.alert("Not Found", "No user with this phone number.");
-                setLoading(false);
-                return;
-            }
+  setLoading(true);
+  setSearchResult(null);
 
-            //store uid 
-            const uid = phoneSnap.val();
-            //self chake
-            if (uid === currentUser?.uid) {
-                Alert.alert("Info", "This is you!");
-                setLoading(false);
-                return;
-            }
-            //searche by uid
-            const userSnap = await get(ref(db, `users/${uid}`));
+  try {
+    let input = phone.trim().toLowerCase();
+   
+    let uid: string | null = null;
 
-            if (userSnap.exists()) {
-                setSearchResult({ uid, ...userSnap.val() });
-            }
-        } catch (err) {
-            Alert.alert("Error", "Failed to fetch user.");
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // ✅ 1️⃣ Try username first
+    const usernameSnap = await get(ref(db, `usernames/${input}`));
+    if (usernameSnap.exists()) {
+      uid = usernameSnap.val();
+    }
+
+    // ✅ 2️⃣ If username not found → try phone
+    if (!uid) {
+      const phoneSnap = await get(ref(db, `phoneNumbersToUids/${input}`));
+      if (phoneSnap.exists()) {
+        uid = phoneSnap.val();
+      }
+    }
+
+    // ❌ If nothing found
+    if (!uid) {
+      Alert.alert("Not Found", "No matching user found.");
+      return;
+    }
+
+    // ❌ Self search check
+    if (uid === currentUser?.uid) {
+      Alert.alert("Info", "This is your own account!");
+      return;
+    }
+
+    // ✅ Fetch Full Profile
+    const userSnap = await get(ref(db, `users/${uid}`));
+    if (userSnap.exists()) {
+      setSearchResult({ uid, ...userSnap.val() });
+    }
+
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Error", "Failed to fetch user!");
+  } finally {
+    setLoading(false);
+  }
+};
+
     const handleAccept = async (uid: string) => {
         if (!currentUser) return;
         setLoading(true);
@@ -161,10 +178,10 @@ const ConnectScreen = () => {
                 <View style={styles.container}>
                     <View style={styles.input}>
                         <TextInput
-                            placeholder="Search By Phone Number"
+                            placeholder="Search By Phone/Username"
                             value={phone}
                             onChangeText={setPhone}
-                            keyboardType="phone-pad"
+                            keyboardType="default"
                             style={{ flex: 1 }}
                             editable={!loading} // Disable input when loading
                         />

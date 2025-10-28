@@ -17,7 +17,7 @@ const Social =({ navigation }: { navigation: LoginScreenNavigationProp }) =>{
     try {
       const user = await googleAuth();
       if (user) {
-        navigation.navigate('HomeScreen');
+        navigation.navigate('ProfileScreen');
         showModal('Google Login Success');
       } else {
         showModal('Google Login Failed');

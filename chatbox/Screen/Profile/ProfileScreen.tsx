@@ -1,6 +1,6 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Platform, PermissionsAndroid, Alert, ActivityIndicator } from "react-native";
-import { RootStackParamList } from "../Navigations/StackNavigations";
+import { RootStackParamList } from "../../Navigations/StackNavigations";
 import { Image } from "react-native";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,7 +10,8 @@ import { getDatabase, ref, set } from "@react-native-firebase/database";
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "@react-native-firebase/storage";
 import auth from '@react-native-firebase/auth';
 import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { saveUserProfile } from "../Firebase/Profiledata";
+import { saveUserProfile } from "../../Firebase/Profiledata";
+import { ScrollView } from "react-native";
 
 type ProfileScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ProfileScreen'>;
 
@@ -100,9 +101,6 @@ const ProfileScreen = ({ navigation }: { navigation: ProfileScreenNavigationProp
   };
 
   // 🔹 Save profile to Realtime Database (and optionally upload image)
-  // Add this import if you don't have it already (for getApp)
-  // import { getApp } from '@react-native-firebase/app'; 
-
   const handleSave = async () => {
 
     if (!name || !phone || !email || phone.length !== 10) {
@@ -119,11 +117,19 @@ const ProfileScreen = ({ navigation }: { navigation: ProfileScreenNavigationProp
     email.toLowerCase();
     try {
       const createdAt = "Date:" + new Date().toLocaleDateString() + ' Time:' + new Date().toLocaleTimeString();
-      await saveUserProfile(user.uid, { image, name, Bio, phone, email, createdAt });
-
+    await saveUserProfile({
+  uid: user.uid,
+  image,
+  name,
+  Bio,
+  phone,
+  email: email.toLowerCase().trim(),
+  createdAt: new Date().toISOString()
+});
+navigation.replace("HomeScreen");
       Alert.alert('Success', 'Profile saved successfully!');
       console.log('Profile saved successfully!');
-
+       navigation.replace('HomeScreen');
     } catch (err) {
       console.log('Firebase save error:', err);
       Alert.alert('Error', 'Profile save failed: ' + err);
@@ -139,19 +145,20 @@ const ProfileScreen = ({ navigation }: { navigation: ProfileScreenNavigationProp
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView>
+
+      
         <View style={styles.container}>
-          
         <View style={styles.header}>
           <Text style={styles.title}>ProfileScreen</Text>
         </View>
       <View style={{ padding: 20, }}>
 
-
           <TouchableOpacity onPress={chooseImageSource}>
             <Image
               style={styles.profileImage}
               resizeMode="stretch"
-              source={image ? { uri: `data:image/jpeg;base64,${image}` } : require('../assets/icon/Profile.jpg')}
+              source={image ? { uri: `data:image/jpeg;base64,${image}` } : require('../../assets/icon/Profile.jpg')}
             />
           </TouchableOpacity>
 
@@ -182,11 +189,12 @@ const ProfileScreen = ({ navigation }: { navigation: ProfileScreenNavigationProp
           </TouchableOpacity>
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
+ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
 

@@ -24,6 +24,16 @@ export const sendFriendRequest = async (fromUid: string, toUid: string) => {
         }
     }
 
+    // 2. Check if already requested
+    const fromUserSnap = await get(ref(db, `users/${fromUid}`));
+    if (fromUserSnap.exists()) {
+        const fromUser = fromUserSnap.val();
+        // Already requested
+        if (fromUser.friendRequests && fromUser.friendRequests[toUid]) {
+            throw new Error('Request already sent!');
+        }
+    }
+
     // Send request
     await update(ref(db, `users/${toUid}/friendRequests`), {
         [fromUid]: true

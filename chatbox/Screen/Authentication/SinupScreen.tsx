@@ -21,6 +21,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import singup from '../../Firebase/singup';
 import EmailVerificationScreen from './EmailVericationScreen';
 import { useModal } from '../../Components/ModalComponet';
+import Social from '../../Components/SocialAthu';
+import googleLogin from '../../Firebase/googleAuth';
 type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signup'>;
 
 // interface Props {
@@ -192,11 +194,15 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
                         </TouchableOpacity>
                     </View>
                 </View>
-                
+                  
+                 
  <View style={styles.socialContainer}>
           <Text style={styles.socialText}>Or continue with</Text>
           <View style={styles.socialButtons}>
-            <TouchableOpacity style={styles.socialButton}>
+            
+            <TouchableOpacity 
+            onPress={googleLogin}
+            style={styles.socialButton}>
               <Icon name="google" size={30} color="#ec2816ff" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton}>

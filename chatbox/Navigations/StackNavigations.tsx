@@ -6,17 +6,21 @@ import TermsScreen from '../Screen/Authentication/TermsPrivacyScreen';
 import HomeScreen from '../Screen/HomeScreen';
 import EmailVerification from '../Screen/Authentication/EmailVericationScreen';
 import ForgotPasswordScreen from '../Screen/Authentication/ForgotPassWordScreen';
-import ProfileScreen from '../Screen/ProfileScreen';
+import ProfileScreen from '../Screen/Profile/ProfileScreen';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ConnectScreen from '../Screen/ConnectScreen';
 import chatScreen from '../Screen/chatScreen';
+import EditProfileScreen from '../Screen/Profile/EditProfileScreen';
+import UsernameScreen from '../Screen/UsernameScreen';
 
 export type RootStackParamList = {
     HomeScreen: undefined;
     Login: undefined;
     Signup: undefined;
     ProfileScreen: undefined;
+    UsernameScreen: undefined;
+    EditProfileScreen: undefined;
     Forgotpass: undefined;
     terms: undefined;
     OTPVerification: { email: string; purpose: 'signup' | 'reset', confirmation: any };
@@ -60,6 +64,15 @@ const StackNavigations = () => {
 
                     component={SignupScreen}
                 />
+                <Stack.Screen
+                name="UsernameScreen" 
+             options=   {
+                    {
+                        
+                        headerShown: false
+                    }
+                }
+                component={UsernameScreen} />
                 <Stack.Screen name="terms"
                     options={
                         {
@@ -86,6 +99,14 @@ const StackNavigations = () => {
                     name="HomeScreen"
                     component={HomeScreen}
                 />
+                <Stack.Screen
+                name='EditProfileScreen'
+                 options={
+                        {
+                            headerShown: false
+                        }
+                    }
+                component={EditProfileScreen} />
 
                 <Stack.Screen
                     name="EmailVerification"
