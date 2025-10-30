@@ -55,7 +55,12 @@ const UsernameScreen: React.FC = () => {
       await set(usernameRef, user.uid);
 
       Alert.alert("Success", "Username updated!");
-      navigation.replace("ProfileScreen");
+    //  navigation.replace("ProfileScreen");
+      navigation.reset({
+  index: 0,
+  routes: [{ name: "ProfileScreen" }],
+});
+
     } catch (err) {
       console.log(err);
       Alert.alert("Error", "Something went wrong!");
@@ -66,7 +71,7 @@ const UsernameScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-
+    
     
     <View style={{ flex: 1, padding: 20 }}>
       <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 15 }}>

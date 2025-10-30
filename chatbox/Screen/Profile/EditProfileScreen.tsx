@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Button, TouchableOpacity, Alert, Image, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, TextInput, Button, TouchableOpacity, Alert, Image, StyleSheet, ScrollView, StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { saveUserProfile } from '../../Firebase/Profiledata'
 import { useEffect, useState } from 'react'
@@ -8,9 +8,10 @@ import { ScreenContentWrapper } from 'react-native-screens'
 import fetchUserByUid from '../../Firebase/homedata'
 import { getDatabase, onValue, ref, set } from '@react-native-firebase/database'
 import { User } from '@react-native-google-signin/google-signin'
-import  Icon  from 'react-native-vector-icons/FontAwesome6'
+import Icon from 'react-native-vector-icons/FontAwesome6'
+import { KeyboardAvoidingView } from 'react-native'
 
-const EditProfileScreen = ({navigation}:{navigation:any}) => {
+const EditProfileScreen = ({ navigation }: { navigation: any }) => {
     const [image, setImage] = useState<string | null>(null)
     const [name, setName] = useState('')
     const [bio, setBio] = useState('')
@@ -19,56 +20,56 @@ const EditProfileScreen = ({navigation}:{navigation:any}) => {
     const [username, setUserName] = useState('')
 
     useEffect(() => {
-
-
         const auth = getAuth();
         const uid = auth?.currentUser?.uid;
         const db = getDatabase();
         const userRef = ref(db, `/users/${uid}/`);
-        console.log("Upadet Profile user datya ", userRef);
+
         const unsubscribe = onValue(userRef, async (snapshot) => {
             if (!snapshot.exists()) return;
 
             const userData = { uid: uid, ...snapshot.val() };
-            console.log("currentUser", userData);
+            // console.log("currentUser", userData);
             setName(userData?.name);
             setBio(userData?.bio);
             setPhone(userData?.phone);
             setImage(userData?.image);
             setUserName(userData?.username);
+            console.log(userData?.uid);
+
         });
         return unsubscribe;
 
     }, [])
 
     const handleSave = async () => {
-try {
-    
-        const auth = getAuth();
-        const uid = auth?.currentUser?.uid;
+        try {
 
-        if (!uid) {
-            Alert.alert("Error", "User not logged in!");
-            return;
+            const auth = getAuth();
+            const uid = auth?.currentUser?.uid;
+
+            if (!uid) {
+                Alert.alert("Error", "User not logged in!");
+                return;
+            }
+
+
+            await saveUserProfile({
+                uid,
+                image,
+                name,
+                Bio: bio,
+                phone,
+                email: email.toLowerCase().trim(),
+                createdAt: new Date().toISOString()
+            });
+            navigation.replace("HomeScreen");
+            console.log("Profile saved successfully!");
+
+        } catch (error) {
+            console.log(error);
+
         }
-
-        
-        await saveUserProfile({
-            uid,
-            image,
-            name,
-            Bio: bio,
-            phone,
-            email: email.toLowerCase().trim(),
-            createdAt: new Date().toISOString()
-        });
-        navigation.replace("HomeScreen");
-        console.log("Profile saved successfully!");
-        
-} catch (error) {
- console.log(error);
-    
-}
     };
     const chooseImageSource = () => {
         Alert.alert(
@@ -107,66 +108,79 @@ try {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-            <ScrollView>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Icon name='arrow-left' size={25} color={'#fff'}/>
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Update Profile</Text>
-                </View>
-                <View style={styles.container}>
-                    <View style={styles.profileImageContainer}>
-                        <TouchableOpacity onPress={chooseImageSource}>
-                            <Image
-                                style={styles.profileImage}
-                                resizeMode="stretch"
-                                source={image ? { uri: `data:image/jpeg;base64,${image}` } : require('../../assets/icon/Profile.jpg')}
+        <KeyboardAvoidingView
+            behavior='height'
+            style={{ flex: 1 }}
+        >
+            <SafeAreaView style={{ flex: 1, }}>
+              <StatusBar backgroundColor="#0A0A0A" barStyle="light-content" />
+              
+                <ScrollView style={{ flex: 1 }}>
+                    <View style={[styles.header, { position: 'relative' }]}>
+                        <TouchableOpacity onPress={() => navigation.goBack()}>
+                            <Icon name='arrow-left' size={25} color={'#fff'} />
+                        </TouchableOpacity>
+                        <Text style={styles.title}>Update Profile</Text>
+
+                    </View>
+                    <View style={styles.container}>
+                        <View style={styles.profileImageContainer}>
+                            <TouchableOpacity onPress={chooseImageSource}>
+                                <Image
+                                    style={styles.profileImage}
+                                    resizeMode="stretch"
+                                    source={image ? { uri: `data:image/jpeg;base64,${image}` } : require('../../assets/icon/Profile.jpg')}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.inputContainer}>
+                            <Text style={{ color: '#000000ff' }}>UserName:</Text>
+                            <View
+                                style={[styles.input, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 5 }]}
+                            >
+                                <TextInput
+                                    placeholder="UserName"
+                                    placeholderTextColor="#000000ff"
+                                    value={`${username}`}
+                                    editable={false}
+                                    style={{ color: '#e21515ff' }}
+                                    onChangeText={setUserName}
+                                />
+                                <Text style={{ color: '#e21515ff' }}>Don't Edit</Text>
+                            </View>
+                            <Text style={{ color: '#000000ff' }}>Name:</Text>
+                            <TextInput
+                                placeholder="Name"
+                                placeholderTextColor="#000000ff"
+                                value={name}
+                                onChangeText={setName}
+                                style={styles.input}
                             />
+                            <Text style={{ color: '#000000ff' }}>Bio:</Text>
+                            <TextInput
+                                placeholder="Bio"
+                                placeholderTextColor="#000000ff"
+                                value={bio}
+                                onChangeText={setBio}
+                                style={styles.input}
+                            />
+                            <Text style={{ color: '#000000ff' }}>Phone:</Text>
+                            <TextInput
+                                placeholder="Phone"
+                                placeholderTextColor="#000000ff"
+                                value={phone}
+                                onChangeText={setPhone}
+                                style={styles.input}
+                            />
+                        </View>
+
+                        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                            <Text style={styles.saveButtonText}>Save </Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={styles.inputContainer}>
-                        <View
-                            style={[styles.input,{flexDirection:'row' ,alignItems:'center' ,justifyContent:'space-between' ,paddingVertical:5 }] }
-                        >
-
-                         <TextInput
-                            placeholder="UserName"
-                            value={`${username}`}
-                             editable={false}
-                             style={{color:'#e21515ff'}}
-                            onChangeText={setUserName}
-                            />
-                            <Text style={{color:'#e21515ff'}}>Don't Edit</Text>
-                            </View>
-                        <TextInput
-                            placeholder="Name"
-                            value={name}
-                            onChangeText={setName}
-                            style={styles.input}
-                        />
-                        <TextInput
-                            placeholder="Bio"
-                            value={bio}
-                            onChangeText={setBio}
-                            style={styles.input} 
-                        />
-                        <TextInput
-                            placeholder="Phone"
-                            value={phone}
-                            onChangeText={setPhone}
-                            style={styles.input}
-                        />
-
-
-                    </View>
-                    <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                        <Text style={styles.saveButtonText}>Save </Text>
-                    </TouchableOpacity>
-
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                </ScrollView>
+            </SafeAreaView>
+        </KeyboardAvoidingView>
 
     )
 }
@@ -176,7 +190,6 @@ export default EditProfileScreen
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
-        backgroundColor: '#fff',
     },
     profileImageContainer: {
         alignItems: 'center',
@@ -253,6 +266,36 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 20,
+    },
+    logoutButton: {
+        marginTop: 10,
+        marginHorizontal: 5,
+        paddingVertical: 16,
+        borderRadius: 12,
+        alignItems: 'center',
+        backgroundColor: '#FF9900',
+        elevation: 5
+    },
+    logoutButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: '600',
+    },
+
+    deleteButton: {
+        marginTop: 10,
+        marginBottom: 30,
+        marginHorizontal: 5,
+        paddingVertical: 16,
+        borderRadius: 12,
+        alignItems: 'center',
+        backgroundColor: '#E32636',
+        elevation: 5
+    },
+    deleteButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: '700'
     },
 
 })

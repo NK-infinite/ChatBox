@@ -11,18 +11,31 @@ type EmailVerificationScreenProp = StackNavigationProp<RootStackParamList, 'Emai
 const EmailVerificationScreen = ({ navigation }: { navigation: EmailVerificationScreenProp }) => {
   const { showModal } = useModal();
   
-  useEffect(() => {
-  const timer = setTimeout(() => {
-    handleCheckVerification();
-  }, 3000); 
-  return () => clearTimeout(timer);
+useEffect(() => {
+  const interval = setInterval(async () => {
+    const user = auth().currentUser;
+    await user?.reload();
+
+    if (user?.emailVerified) {
+      clearInterval(interval);
+      showModal('Verified , Your email is verified! Welcome.');
+      navigation.replace('UsernameScreen');
+    }
+  }, 500);
+
+  return () => clearInterval(interval);
 }, []);
 
   const handleCheckVerification = async () => {
     const user = auth()?.currentUser;
     await user?.reload();
     if (user?.emailVerified) {
-      navigation.replace('UsernameScreen');
+  //    navigation.replace('UsernameScreen');
+     navigation.reset({
+  index: 0,
+  routes: [{ name: "UsernameScreen" }],
+});
+
       showModal('Verified , Your email is verified! Welcome.');
     } else {
       showModal('Not Verified , Please verify your email first.');
@@ -71,7 +84,6 @@ const EmailVerificationScreen = ({ navigation }: { navigation: EmailVerification
 };
 
 export default EmailVerificationScreen;
-
 
 const style = StyleSheet.create({
   contener: {

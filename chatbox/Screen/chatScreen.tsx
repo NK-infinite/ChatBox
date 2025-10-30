@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, Alert, StatusBar } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { TextInput } from 'react-native-paper';
-import { getDatabase, ref, onValue, push, get } from '@react-native-firebase/database';
+import { getDatabase, ref, onValue, push, get, set } from '@react-native-firebase/database';
 import { getAuth } from '@react-native-firebase/auth';
 import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { ScrollView } from 'react-native';
+import { deleteChat, deleteForMe } from '../Firebase/chathandel';
+import { Clipboard } from 'react-native';
 
 interface Message {
   id: string;
@@ -15,14 +17,7 @@ interface Message {
   timestamp: number;
 }
 
-interface ChatScreenProps {
-  route: {
-    params: {
-      chatId: string;
-      phone: string;
-    }
-  }
-}
+
 
 const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
   const { chatId } = route?.params;
@@ -96,34 +91,94 @@ const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
     if (!currentUser || text.trim() === "") return;
 
     const db = getDatabase(
-      undefined,
-      "https://chatbox-b5748-default-rtdb.asia-southeast1.firebasedatabase.app"
+        undefined,
+        "https://chatbox-b5748-default-rtdb.asia-southeast1.firebasedatabase.app"
     );
 
     const senderId = currentUser.uid;
     const receiverId = chatId;
+    
+    // --- 1. Get a unique key for the message ---
+    // We will use this key for both the sender and the receiver's node.
+    const senderRef = ref(db, `users/${senderId}/messages/${receiverId}`);
+    const newMessageRef = push(senderRef); // This generates a unique key
+    const messageKey = newMessageRef.key; // Get the key!
+
+    if (!messageKey) return; // Should not happen
 
     const messageData = {
-      sender: senderId,
-      senderEmail: currentUser.email || "unknown",
-      text: text.trim(),
-      timestamp: Date.now(),
+        sender: senderId,
+        senderEmail: currentUser.email || "unknown",
+        text: text.trim(),
+        timestamp: Date.now(),
     };
 
-    // Save message to sender's node
-    const senderRef = ref(db, `users/${senderId}/messages/${receiverId}`);
-    push(senderRef, messageData);
+    // --- 2. Save message to sender's node using the common key ---
+    set(newMessageRef, messageData); 
 
-    // Save message to receiver's node
-    const receiverRef = ref(db, `users/${receiverId}/messages/${senderId}`);
-    push(receiverRef, messageData);
-    console.log("Message sent:", messageData);
+    // --- 3. Save message to receiver's node using the *same common key* ---
+    const receiverRef = ref(db, `users/${receiverId}/messages/${senderId}/${messageKey}`);
+    set(receiverRef, messageData); 
+    
+    console.log("Message sent with key:", messageKey);
     setText("");
-  };
+};
+  const handelChat = (id:any)=>{
+  const currentUid = currentUser?.uid;
+  const isMyMessage = id.sender === currentUid;
+  if (!currentUid) return;
 
+    if (isMyMessage) {
+       Alert.alert(
+      "Delete Chat",
+      "Are you sure you want to delete this chat?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+ 
+        {
+  text: "Delete for Me",
+  onPress: () => deleteForMe({ messageId: id.id, otherUserId: chatId, })
+},
+   
+        {
+          text: "Delete for everyone",
+          onPress: () => deleteChat({ messageId: id.id, otherUserId: chatId, }),
+          style: "destructive",
+        }
+      ],
+      { cancelable: false }
+    );
+  }else{
 
-  const renderItem = ({ item }: { item: Message }) => (
+    Alert.alert(
+      "Delete Chat",
+      "Are you sure you want to delete this chat?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        
+        {
+          text: "Delete for Me",
+          onPress: () => deleteForMe({ messageId: id.id, otherUserId: chatId, })
+        },
+        
+     
+      ],
+      { cancelable: false }
+    );
+  }
+}
+
+  const renderItem = ({ item }: { item: any }) => (
     <View
+      key={item.id}
       style={[
         styles.messageContainer,
         {
@@ -132,20 +187,22 @@ const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
         }
       ]}
     >
+      <TouchableOpacity 
+    onLongPress={()=> handelChat(item)}>
+
       <Text style={{ color: item.sender === currentUser?.uid ? '#fff' : '#000' }}>{item.text}</Text>
       <Text style={styles.timestamp}>{new Date(item.timestamp).toLocaleTimeString()}</Text>
+        </TouchableOpacity>
     </View>
   )
   return (
     <SafeAreaView style={{ flex: 1 }}>
+     <StatusBar backgroundColor="#0A0A0A" barStyle="light-content" />
      
         <View style={styles.container}>
-
           {/* Header */}
-
           <View style={styles.header}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
-
               <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Icon name='arrow-left' size={25} color={'#fff'} />
               </TouchableOpacity>
@@ -185,13 +242,11 @@ const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
             </TouchableOpacity>
           </View>
         </View>
-
     </SafeAreaView>
   );
 }
 
 export default ChatScreen;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -230,7 +285,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 30,
-    borderWidth: 1,
+        borderWidth: 1,
     borderColor: '#ddd',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },

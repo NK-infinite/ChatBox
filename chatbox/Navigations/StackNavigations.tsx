@@ -13,6 +13,7 @@ import ConnectScreen from '../Screen/ConnectScreen';
 import chatScreen from '../Screen/chatScreen';
 import EditProfileScreen from '../Screen/Profile/EditProfileScreen';
 import UsernameScreen from '../Screen/UsernameScreen';
+import SettingsScreen from '../Screen/Profile/SettingScreen';
 
 export type RootStackParamList = {
     HomeScreen: undefined;
@@ -22,6 +23,7 @@ export type RootStackParamList = {
     UsernameScreen: undefined;
     EditProfileScreen: undefined;
     Forgotpass: undefined;
+    Settings: undefined;
     terms: undefined;
     OTPVerification: { email: string; purpose: 'signup' | 'reset', confirmation: any };
     EmailVerification: undefined;
@@ -89,6 +91,14 @@ const StackNavigations = () => {
                         }
                     }
                     component={ProfileScreen} />
+               <Stack.Screen
+               options={
+                {
+                    headerShown:false
+                }
+               }
+               name="Settings" 
+                component={SettingsScreen} />
 
                 <Stack.Screen
                     options={

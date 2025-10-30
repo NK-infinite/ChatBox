@@ -51,20 +51,23 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
       setFriends(friendList);
     });
 
-    // 🧹 Cleanup listener when screen unmounts
+    // Cleanup listener when screen unmounts
     return () => unsubscribe();
   }, [currentUid]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#6C63FF" />
+<StatusBar backgroundColor="#0A0A0A" barStyle="light-content" />
+
 
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>ChatBox</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("EditProfileScreen")}>
-          <Icon name="user-circle" size={34} color="#fff" />
-        </TouchableOpacity>
+       <TouchableOpacity
+         onPress={() => navigation.navigate("Settings")}
+       >
+         <Icon name="gear" size={25} color="#fff" />
+       </TouchableOpacity>
       </View>
 
       {/* Friends List */}

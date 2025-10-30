@@ -32,7 +32,7 @@ const ConnectScreen = () => {
     const auth = getAuth();
     const db = getDatabase(undefined, databaseURL);
 
-    // 1️⃣ Get current user UID and profile
+    // 1️ Get current user UID and profile
     useEffect(() => {
         const AtiveUser = auth.onAuthStateChanged(user => {
             if (user) {
@@ -48,7 +48,7 @@ const ConnectScreen = () => {
         return () => AtiveUser();
     }, []);
 
-    // 2️⃣ Load incoming friend requests
+    // 2️ Load incoming friend requests
     useEffect(() => {
         if (!currentUser?.friendRequests) {
             setIncomingRequests([]);
@@ -75,7 +75,7 @@ const ConnectScreen = () => {
         fetchRequests();
     }, [currentUser]);
 
-    // 3️⃣ Search user by phone
+    // 3️ Search user by phone
   const fetchUserByPhone = async () => {
   if (!phone.trim()) {
     Alert.alert("Input Required", "Enter phone number or @username!");
@@ -90,13 +90,13 @@ const ConnectScreen = () => {
    
     let uid: string | null = null;
 
-    // ✅ 1️⃣ Try username first
+    //  1️ Try username first
     const usernameSnap = await get(ref(db, `usernames/${input}`));
     if (usernameSnap.exists()) {
       uid = usernameSnap.val();
     }
 
-    // ✅ 2️⃣ If username not found → try phone
+    //  2️ If username not found → try phone
     if (!uid) {
       const phoneSnap = await get(ref(db, `phoneNumbersToUids/${input}`));
       if (phoneSnap.exists()) {
@@ -104,19 +104,19 @@ const ConnectScreen = () => {
       }
     }
 
-    // ❌ If nothing found
+    //  If nothing found
     if (!uid) {
       Alert.alert("Not Found", "No matching user found.");
       return;
     }
 
-    // ❌ Self search check
+    //  Self search check
     if (uid === currentUser?.uid) {
       Alert.alert("Info", "This is your own account!");
       return;
     }
 
-    // ✅ Fetch Full Profile
+    //  Fetch Full Profile
     const userSnap = await get(ref(db, `users/${uid}`));
     if (userSnap.exists()) {
       setSearchResult({ uid, ...userSnap.val() });
@@ -169,7 +169,8 @@ const ConnectScreen = () => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <StatusBar barStyle="dark-content" backgroundColor="#6C63FF" />
+            <StatusBar backgroundColor="#0A0A0A" barStyle="light-content" />
+            
             <View style={{ flex: 1 }}>
                 <View style={styles.header}>
                     <Text style={styles.title}>Search your Friend</Text>

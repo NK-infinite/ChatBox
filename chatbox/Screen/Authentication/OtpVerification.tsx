@@ -8,6 +8,7 @@ import {
     Alert,
     ScrollView,
     Keyboard,
+    StatusBar,
 } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -101,7 +102,8 @@ const OTPVerificationScreen = ({ navigation, route }: Props) => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-
+               <StatusBar backgroundColor="#0A0A0A" barStyle="light-content" />
+               
             <View style={styles.header}>
                 <View style={styles.iconContainer}>
                     <Icon name="shield" size={60} color="#007AFF" />

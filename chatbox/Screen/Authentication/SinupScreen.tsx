@@ -10,16 +10,15 @@ import {
     Alert,
     ScrollView,
     Dimensions,
+    StatusBar,
 } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { RootStackParamList } from '../../Navigations/StackNavigations';
 import styles from '../../styles/Login_Singup';
-import auth from '@react-native-firebase/auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import singup from '../../Firebase/singup';
-import EmailVerificationScreen from './EmailVericationScreen';
 import { useModal } from '../../Components/ModalComponet';
 import Social from '../../Components/SocialAthu';
 import googleLogin from '../../Firebase/googleAuth';
@@ -65,7 +64,11 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
         if (result.success) {
 
             if(result.verifi){
-            navigation.navigate('EmailVerification');
+           // navigation.replace('EmailVerification');
+             navigation.reset({
+        index: 0,
+        routes: [{ name: "EmailVerification" }],
+      });
         }
 
          showModal('Success , Account created successfully!');
@@ -85,6 +88,8 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
 <SafeAreaView
             style={styles.container}
         >
+            <StatusBar backgroundColor="#0A0A0A" barStyle="light-content" />
+            
             <ScrollView
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={styles.scrollContainer}>
@@ -104,7 +109,7 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
                         <TextInput
                             style={styles.input}
                             placeholder="Full Name"
-                            placeholderTextColor="#999"
+                            placeholderTextColor="#000000ff"
                             value={name}
                             onChangeText={setName}
                             keyboardType='default'
@@ -118,7 +123,7 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
                         <TextInput
                             style={styles.input}
                             placeholder="Enter Email"
-                            placeholderTextColor="#999"
+                            placeholderTextColor="#000000ff"
                             value={email}
                             keyboardType='email-address'
                             onChangeText={setemail}
@@ -131,7 +136,7 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
                         <TextInput
                             style={styles.input}
                             placeholder="Password"
-                            placeholderTextColor="#999"
+                            placeholderTextColor="#000000ff"
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry={!showPassword}
@@ -154,7 +159,7 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
                         <TextInput
                             style={styles.input}
                             placeholder="Confirm Password"
-                            placeholderTextColor="#999"
+                            placeholderTextColor="#000000ff"
                             value={confirmPassword}
                             onChangeText={setConfirmPassword}
                             secureTextEntry={!showConfirmPassword}
@@ -196,7 +201,7 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
                 </View>
                   
                  
- <View style={styles.socialContainer}>
+    <View style={styles.socialContainer}>
           <Text style={styles.socialText}>Or continue with</Text>
           <View style={styles.socialButtons}>
             

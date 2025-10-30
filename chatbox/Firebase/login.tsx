@@ -3,12 +3,13 @@ import auth from '@react-native-firebase/auth';
 import { Alert } from 'react-native';
 import { useModal } from '../Components/ModalComponet';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationContainer } from '@react-navigation/native';
 
 interface LoginData {
   email: string;
   password: string;
 }
-const login = async ({ email, password }: LoginData ,showModal: (msg: string) => void) => {
+const login = async ({ email, password }:  LoginData ,showModal: (msg: string) => void ) => {
  // const { showModal } = useModal(); 
   try {
     await auth().signInWithEmailAndPassword(email, password);
@@ -34,3 +35,4 @@ const login = async ({ email, password }: LoginData ,showModal: (msg: string) =>
 };
 
 export default login;
+

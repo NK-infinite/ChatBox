@@ -34,7 +34,7 @@ const TermsScreen = ({ navigation }: Props) => {
             return;
         }
         // Navigate to signup or next screen
-    navigation.navigate('Signup');
+    navigation.goBack();
   };
 
 
@@ -60,12 +60,7 @@ const TermsScreen = ({ navigation }: Props) => {
       
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Icon name="arrow-left" size={24} color="#007AFF" />
-        </TouchableOpacity>
+       
         <Text style={styles.title}>Terms & Privacy</Text>
         <View style={styles.placeholder} />
       </View>
@@ -271,7 +266,7 @@ const TermsScreen = ({ navigation }: Props) => {
           disabled={!acceptedTerms || !acceptedPrivacy}
         >
           <Text style={styles.continueButtonText}>
-            Continue to Sign Up
+            Continue to..
           </Text>
         </TouchableOpacity>
       </View>

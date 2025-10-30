@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 20,
-        paddingVertical: 10,
+        paddingVertical: 15,
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
         shadowColor: "#000",
@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 18,
         marginVertical: 8,
-
         shadowColor: "#6C63FF",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
