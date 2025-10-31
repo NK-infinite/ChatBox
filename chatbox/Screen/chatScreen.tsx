@@ -223,7 +223,7 @@ const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
           renderItem={renderItem}
           inverted
           keyboardShouldPersistTaps='never'
-          contentContainerStyle={{ padding: 10, }} // add bottom space
+          contentContainerStyle={{ padding: 10, }} 
           />
    
 
@@ -237,6 +237,7 @@ const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
               onChangeText={setText}
               mode="flat"
               underlineColor="transparent"
+              activeUnderlineColor="transparent"
             />
 
           </View>
