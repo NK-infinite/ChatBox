@@ -232,6 +232,7 @@ const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
           <View style={styles.inputContainer}>
             <TextInput
               placeholder="Type a message"
+              placeholderTextColor='#000'
               style={styles.textInput}
               value={text}
               onChangeText={setText}
@@ -244,10 +245,9 @@ const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
           <View
             style={styles.sendButton}
           >
-
           <TouchableOpacity 
             onPress={sendMessage}>
-            <Icon name="paper-plane" size={30} color="#6C63FF" style={{  }} />
+            <Icon name="paper-plane" size={20} color="#6C63FF" style={{  }} />
           </TouchableOpacity>
               </View>
         </View>
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 15,
   },
   inputContainer: {
     flex: 1,
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical:15,
     backgroundColor:'white',
-    borderRadius: 40,
+    borderRadius: 25,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.26,
@@ -329,10 +329,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   textInput: {
-    flex: 1,
     backgroundColor: 'transparent',
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     borderRadius: 30,
+    marginVertical: -3,
   },
   messageContainer: {
     maxWidth: '70%',
