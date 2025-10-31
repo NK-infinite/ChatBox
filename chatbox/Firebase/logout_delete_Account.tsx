@@ -58,6 +58,7 @@ export const deleteAccount = async (password: string, navigation: any) => {
       remove(ref(db, `users/${uid}`)),
       phone && remove(ref(db, `phoneNumbersToUids/${phone}`)),
       username && remove(ref(db, `usernames/${username}`)),
+      remove(ref(db, `userAgreements/${uid}`)),
       remove(ref(db, `connections/${uid}`)),
       remove(ref(db, `messages/${uid}`)),
     ]);
@@ -67,6 +68,10 @@ export const deleteAccount = async (password: string, navigation: any) => {
 
     // 🔹 Step 5: Clear local data and redirect
     await AsyncStorage.removeItem('isLoggedIn');
+    await AsyncStorage.removeItem('name');
+    await AsyncStorage.removeItem('email');
+    await AsyncStorage.removeItem('terms');
+    await AsyncStorage.removeItem('privacy');
     navigation.reset({
       index: 0,
       routes: [{ name: 'Login' }],

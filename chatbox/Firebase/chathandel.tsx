@@ -29,7 +29,7 @@ export const deleteChat = async ({ messageId, otherUserId }: { messageId: string
     await remove(senderRef);
     await remove(receiverRef);
 
-    console.log("Message deleted for both users ✅");
+
 
   } catch (error) {
     console.log("Delete Chat Error →", error);
@@ -50,7 +50,6 @@ export const deleteForMe = async ({ messageId, otherUserId }: { messageId: strin
 
     await remove(messageRef);
 
-    console.log("Message deleted only for me ✅");
   } catch (e) {
     console.log("DeleteForMe Error →", e);
   }

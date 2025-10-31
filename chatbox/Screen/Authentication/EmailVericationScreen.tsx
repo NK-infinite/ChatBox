@@ -76,8 +76,7 @@ useEffect(() => {
 
       </View>
       <View>
-        <Text style={{ fontSize:15}} >{`Did't receive the email? Check your spam folder.\n`}</Text>
-        <Text style={{color:'red' ,fontSize:15}} >Note:Wait Some Second Click "I have verified"</Text>
+        <Text style={{  flexDirection: 'column', color: '#dc7171ff',textAlign:'center', fontSize:18, fontWeight:'bold'}} >{`Did't receive the email? \nCheck your spam folder.\n`}</Text>
       </View>
     </View>
   );

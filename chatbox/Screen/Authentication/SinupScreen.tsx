@@ -39,27 +39,56 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
         const screenWidth = Dimensions.get("window").width;
         const isFolded = screenWidth > 600;
         const { showModal } = useModal(); 
+      
+const validateInputs = ({ name, email, password, confirmPassword }: any) => {
+  let error = '';
+
+  if (!name || !email || !password || !confirmPassword) {
+    error = 'Please fill in all fields';
+  } else if (password !== confirmPassword) {
+    error = 'Passwords do not match';
+  } else if (password.length < 6) {
+    error = 'Password must be at least 6 characters long';
+  } else {
+    let hasSpecial = false;
+
+    for (let i = 0; i < password.length; i++) {
+      const char = password[i];
+      // Check if it's not a letter or digit
+      if (!(char >= 'a' && char <= 'z') && 
+          !(char >= 'A' && char <= 'Z') && 
+          !(char >= '0' && char <= '9')) {
+        hasSpecial = true;
+        break;
+      }
+    }
+
+    if (!hasSpecial) {
+      error = 'Password must include at least one special character';
+    }
+  }
+
+  if (error) {
+    showModal(`Error, ${error}`);
+    return false;
+  }
+
+  return true;
+};
+
+
+        
         const handleSignup = async () => {
-            if (!name || !email || !password || !confirmPassword) {
-            showModal('Error, Please fill in all fields');
-            return;
-        }
-        if (password !== confirmPassword) {
-            showModal('Error, Passwords do not match');
-            return;
-        }
-        if (password.length < 6) {
-            showModal('Error Password must be at least 6 characters');
-            return;
-        }
+
+          if (!validateInputs({ name, email, password, confirmPassword })) return;
+
 
         setIsLoading(true);
-        // Simulate API call
+       
       try {
-        // Optionally, update display name
+       
         
         setIsLoading(true);
-        
         const result = await singup({ name, email, password }  , showModal)    
         if (result.success) {
 
@@ -75,7 +104,7 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
         }
 
         setIsLoading(false);
-        // Navigate to Home or Login screen after successful signup
+        
         
     } catch (error: any) {
         setIsLoading(false);
@@ -200,7 +229,7 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
                     </View>
                 </View>
                   
-                 
+{/*                  
     <View style={styles.socialContainer}>
           <Text style={styles.socialText}>Or continue with</Text>
           <View style={styles.socialButtons}>
@@ -217,7 +246,7 @@ type SignupScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signu
               <Icon name="apple" size={30} color="#ec2816ff" />
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
 
                 {/* Terms */}
                 <View style={isFolded ?  { flexDirection:'row'  , alignItems:'center',  justifyContent:'center' , marginTop:15 } : {flexDirection:'column', marginTop:40} } >

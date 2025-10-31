@@ -1,4 +1,5 @@
 // firebase/databaseService.js
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getApp } from '@react-native-firebase/app';
 import { getDatabase, ref, set, update } from '@react-native-firebase/database'; 
 import { Alert } from 'react-native';
@@ -17,32 +18,38 @@ export const saveUserProfile = async (profile: {
   console.log('📥 Calling saveUserProfile...');
 
   try {
+  
     const db = getDatabase();
     const userRef = ref(db, `users/${profile.uid}`);
-
+  
     const updateData: Record<string, any> = {};
-
     if (profile.image !== undefined) updateData.image = profile.image;
     if (profile.name) updateData.name = profile.name.trim();
-    if (profile.Bio) updateData.bio = profile.Bio.trim(); // ✅ Correct name
+    if (profile.Bio) updateData.bio = profile.Bio.trim(); 
     if (profile.phone) updateData.phone = profile.phone;
     if (profile.email) updateData.email = profile.email;
     if (profile.createdAt) updateData.createdAt = profile.createdAt;
 
-    // ✅ Only update specific fields, keep username safe
+    //  Only update specific fields, keep username safe
     await update(userRef, updateData);
 
-    // ✅ Keep phone mapping separate
+    //  Keep phone mapping separate
     if (profile.phone) {
       await update(ref(db), {
         [`phoneNumbersToUids/${profile.phone}`]: profile.uid,
       });
     }
 
-    console.log('✅ Profile updated successfully');
+     
+    
+     console.log('Profile updated successfully');
     Alert.alert('Success', 'Profile updated successfully!');
   } catch (err) {
-    console.error('❌ Database save error', err);
+    console.error(' Database save error', err);
     Alert.alert('Error', 'Profile update failed: ' + err);
   }
 };
+function database() {
+  throw new Error('Function not implemented.');
+}
+

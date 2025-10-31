@@ -14,6 +14,9 @@ import chatScreen from '../Screen/chatScreen';
 import EditProfileScreen from '../Screen/Profile/EditProfileScreen';
 import UsernameScreen from '../Screen/UsernameScreen';
 import SettingsScreen from '../Screen/Profile/SettingScreen';
+import { get, getDatabase, ref } from '@react-native-firebase/database';
+import { getAuth } from '@react-native-firebase/auth';
+import { ActivityIndicator, View } from 'react-native';
 
 export type RootStackParamList = {
     HomeScreen: undefined;
@@ -35,21 +38,81 @@ export type RootStackParamList = {
 const StackNavigations = () => {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            const loggedIn = await AsyncStorage.getItem('isLoggedIn');
-            setIsLoggedIn(loggedIn === 'true');
-        };
-        checkLoginStatus();
-    }, []);
+const [initialRoute, setInitialRoute] = useState<keyof RootStackParamList | undefined>(undefined);
 
 
-    if (isLoggedIn === null) {
-        return null; // ya <ActivityIndicator size="large" /> while loading
-    } const Stack = createNativeStackNavigator<RootStackParamList>();
+useEffect(() => {
+  const checkUserState = async () => {
+    const user = getAuth().currentUser;
+
+    //  Step 1: Not logged in
+    if (!user) {
+      setInitialRoute('Signup');
+      return;
+    }
+
+    await user.reload(); // refresh current state
+
+    //  Step 2: Handle Email verification
+    const emailVerifiedBefore = await AsyncStorage.getItem('emailVerified');
+    if (!user.emailVerified && !emailVerifiedBefore) {
+      setInitialRoute('EmailVerification');
+      return;
+    }
+
+    //  Once verified, mark it permanently
+    if (user.emailVerified && !emailVerifiedBefore) {
+      await AsyncStorage.setItem('emailVerified', 'true');
+    }
+
+    // 🔹 Step 3: Fetch user data
+    const db = getDatabase();
+    const userRef = ref(db, `users/${user.uid}`);
+    const snapshot = await get(userRef);
+
+    if (!snapshot.exists()) {
+      setInitialRoute('UsernameScreen');
+      return;
+    }
+
+    const data = snapshot.val();
+
+    //  Step 4: Username check
+    if (!data.username || data.username.trim() === '') {
+      setInitialRoute('UsernameScreen');
+      return;
+    }
+
+    //  Step 5: Profile completion check
+    const requiredFields = ['phone', 'username', 'email', 'name'];
+    const incomplete = requiredFields.some(
+      (field) => !data[field] || data[field].trim() === ''
+    );
+
+    if (incomplete) {
+      setInitialRoute('ProfileScreen');
+      return;
+    }
+
+    //  Step 6: All good → Home
+    setInitialRoute('HomeScreen');
+  };
+  checkUserState();
+}, []);
+
+  if (!initialRoute) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+    const Stack = createNativeStackNavigator<RootStackParamList>();
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "Login"}>
+<Stack.Navigator initialRouteName={initialRoute}>
+
                 <Stack.Screen name="Login"
                     options={
                         {
@@ -63,7 +126,6 @@ const StackNavigations = () => {
                             headerShown: false
                         }
                     }
-
                     component={SignupScreen}
                 />
                 <Stack.Screen
@@ -109,6 +171,7 @@ const StackNavigations = () => {
                     name="HomeScreen"
                     component={HomeScreen}
                 />
+             
                 <Stack.Screen
                 name='EditProfileScreen'
                  options={
@@ -120,6 +183,11 @@ const StackNavigations = () => {
 
                 <Stack.Screen
                     name="EmailVerification"
+                     options={
+                        {
+                            headerShown: false
+                        }
+                    }
                     component={EmailVerification} />
 
                 <Stack.Screen
@@ -128,12 +196,14 @@ const StackNavigations = () => {
                     }}
                     name="Forgotpass"
                     component={ForgotPasswordScreen} />
+             
                 <Stack.Screen
                     options={{
                         headerShown: false
                     }}
                     name="ConnectScreen"
                     component={ConnectScreen} />
+          
                 <Stack.Screen
                     options={{
                         headerShown: false
@@ -146,5 +216,5 @@ const StackNavigations = () => {
     );
 }
 
-export default StackNavigations;
 
+export default StackNavigations;

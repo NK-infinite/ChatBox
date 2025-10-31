@@ -88,8 +88,6 @@ export default function DeleteAccountModal({ visible, onClose, navigation }: any
               <Text style={{ color: 'red', fontSize: 20 }}>Delete Account</Text>
           </TouchableOpacity>
           </View>
-          {/* <Button title={loading ? 'Deleting...' : 'Delete Account'} onPress={handleDelete} disabled={loading} />
-          <Button title="Cancel" onPress={onClose} color="gray" /> */}
         </View>
       </View>
     </Modal>

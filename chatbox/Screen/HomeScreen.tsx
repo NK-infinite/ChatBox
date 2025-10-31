@@ -71,6 +71,9 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
       </View>
 
       {/* Friends List */}
+      {
+ friends.length > 0 ?
+      
       <FlatList
         data={friends}
         keyExtractor={(item) => item.uid}
@@ -103,7 +106,12 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
           </TouchableOpacity>
         )}
       />
-                   
+    :
+     <View style={styles.noFriendsContainer}>
+
+      <Text style={styles.noFriends}>No friends found.</Text>               
+     </View>
+}
 
       {/* Floating Add Friend Button */}
       <TouchableOpacity

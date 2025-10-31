@@ -140,8 +140,8 @@ const LoginScreen = ({ navigation }: { navigation: LoginScreenNavigationProp }) 
           </TouchableOpacity>
         </View>
       </View>
-
-      <Social navigation={navigation} />
+  
+      {/* <Social navigation={navigation} /> */}
 
     </ScrollView>
      </KeyboardAvoidingView>

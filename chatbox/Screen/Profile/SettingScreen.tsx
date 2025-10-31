@@ -61,8 +61,13 @@ const SettingsScreen = ({ navigation }: any) => {
         <View style={ {flexDirection:'column', marginTop:40} } >
                     <TouchableOpacity
                         style={styles.termsButton}
-                        onPress={() => navigation.replace('terms')}
-                    >
+                        onPress={() =>
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'terms' }],
+    })
+  }
+>
                             <Text style={styles.termsLink}>
                                 Terms of Service
                                 <Text> and </Text>

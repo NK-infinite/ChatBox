@@ -3,8 +3,7 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: "#F4F4FF",
-        marginBottom:35,
+        marginBottom:30,
     },
     header: {
         backgroundColor: "#6C63FF",
@@ -93,6 +92,16 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 8,
     },
+    noFriendsContainer:{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    noFriends:{
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#222",
+    },
 
     //only Connect Screen
     button: {
@@ -130,9 +139,6 @@ const styles = StyleSheet.create({
         padding: 10,
         marginLeft: 10,
     },
-    
-   
 });
-
 
 export default styles

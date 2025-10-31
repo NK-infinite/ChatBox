@@ -13,6 +13,7 @@ import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { saveUserProfile } from "../../Firebase/Profiledata";
 import { ScrollView } from "react-native";
 import ImagePicker from 'react-native-image-crop-picker';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type ProfileScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ProfileScreen'>;
 
@@ -24,10 +25,18 @@ const ProfileScreen = ({ navigation }: { navigation: ProfileScreenNavigationProp
   const [image, setImage] = useState<string | null>(null);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
 
-
   const users = auth().currentUser;
   console.log('User UID:', users?.uid);
   const [loading, setLoading] = useState(true);
+  
+useEffect(() => {
+  (async () => {
+    const email = await AsyncStorage.getItem('email');
+    const name = await AsyncStorage.getItem('name');
+    if (email) setEmail(email);
+    if (name) setName(name);
+  })();
+}, []);
 
   // 🔹 Anonymous login
   useEffect(() => {
@@ -109,34 +118,55 @@ const ProfileScreen = ({ navigation }: { navigation: ProfileScreenNavigationProp
     );
   };
 
+
+  const validateProfile = ({ name, phone, email }: any) => {
+  // Trim whitespace
+  const trimmedName = name?.trim();
+  const trimmedPhone = phone?.trim();
+  const trimmedEmail = email?.trim();
+
+  // 1️ Empty field check
+  if (!trimmedName || !trimmedPhone || !trimmedEmail) {
+    Alert.alert('Error', 'All fields are required.');
+    return false;
+  }
+
+  // 2️ Phone number check (only digits + exactly 10 chars)
+  if (trimmedPhone.length !== 10) {
+    Alert.alert('Error', 'Phone number must be 10 digits.');
+    return false;
+  }
+
+  for (let i = 0; i < trimmedPhone.length; i++) {
+    const char = trimmedPhone[i];
+    if (char < '0' || char > '9') {
+      Alert.alert('Error', 'Phone number can contain digits only.');
+      return false;
+    }
+  }
+
+
+  const atIndex = trimmedEmail.indexOf('@');
+  const dotIndex = trimmedEmail.lastIndexOf('.');
+
+  // must contain one '@' not at start or end, and at least one '.' after '@'
+  if (
+    atIndex <= 0 ||                         // '@' can’t be at start
+    dotIndex <= atIndex + 1 ||              // '.' must come after '@'
+    dotIndex === trimmedEmail.length - 1 || // '.' can’t be last char
+    trimmedEmail.includes(' ')              // no spaces allowed
+  ) {
+    Alert.alert('Error', 'Invalid email format.');
+    return false;
+  }
+
+  return true;
+};
   // 🔹 Save profile to Realtime Database (and optionally upload image)
   const handleSave = async () => {
-
-    if (!name?.trim() || !phone?.trim() || !email?.trim())
-      return Alert.alert('Error', 'All fields are required.');
-/*
-
-^ → start of the string
-\d → any digit (0–9)
-{10} → exactly 10 digits
-$ → end of the string
-
-*/ 
-    if (!/^\d{10}$/.test(phone))
-      return Alert.alert('Error', 'Phone number must be 10 digits.');
-
-
-    /*
-    ^       → start of the string
-    [^\s@]+ → one or more characters that are not a space (\s) or @
-    @       → the literal @ symbol
-    [^\s@]+ → domain part (again, no spaces or @)
-    \.      → a literal .
-    [^\s@]+ → something after the dot (like .com, .in, etc.)
-    $       → end of the string
-    */ 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      return Alert.alert('Error', 'Invalid email format.');
+    if (!validateProfile({ name, phone, email })) {
+      return;
+    }
 
     if (!user) {
       Alert.alert('Error', 'User not logged in yet!');
@@ -183,7 +213,6 @@ $ → end of the string
       <ScrollView style={{ flex: 1 }}>
    <StatusBar backgroundColor="#0A0A0A" barStyle="light-content" />
    
-
         <View style={styles.container}>
           <View style={styles.header}>
             <Text style={styles.title}>Create Profile</Text>
@@ -200,7 +229,7 @@ $ → end of the string
 
             <TextInput
               value={name}
-              placeholder="Enter Name"
+              placeholder="Enter Name(Required)"
               placeholderTextColor="#000000ff"
               onChangeText={setName}
               style={styles.input} />
@@ -213,14 +242,15 @@ $ → end of the string
 
             <TextInput
               value={phone}
-              placeholder="Enter Phone Number"
+              placeholder="Enter Phone Number(Required)"
               placeholderTextColor="#000000ff"
               onChangeText={setPhone}
               style={styles.input}
               keyboardType="phone-pad" />
             <TextInput
               value={email}
-              placeholder="Enter Email"
+              editable={false}
+              placeholder="Enter Email(Required)"
               placeholderTextColor="#000000ff"
               onChangeText={setEmail}
               style={styles.input} />

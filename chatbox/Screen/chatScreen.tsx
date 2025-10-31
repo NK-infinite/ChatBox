@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, Alert, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform, Alert, StatusBar, ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { TextInput } from 'react-native-paper';
 import { getDatabase, ref, onValue, push, get, set } from '@react-native-firebase/database';
@@ -91,13 +91,13 @@ const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
     if (!currentUser || text.trim() === "") return;
 
     const db = getDatabase(
-        undefined,
-        "https://chatbox-b5748-default-rtdb.asia-southeast1.firebasedatabase.app"
+      undefined,
+      "https://chatbox-b5748-default-rtdb.asia-southeast1.firebasedatabase.app"
     );
 
     const senderId = currentUser.uid;
     const receiverId = chatId;
-    
+
     // --- 1. Get a unique key for the message ---
     // We will use this key for both the sender and the receiver's node.
     const senderRef = ref(db, `users/${senderId}/messages/${receiverId}`);
@@ -107,74 +107,74 @@ const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
     if (!messageKey) return; // Should not happen
 
     const messageData = {
-        sender: senderId,
-        senderEmail: currentUser.email || "unknown",
-        text: text.trim(),
-        timestamp: Date.now(),
+      sender: senderId,
+      senderEmail: currentUser.email || "unknown",
+      text: text.trim(),
+      timestamp: Date.now(),
     };
 
     // --- 2. Save message to sender's node using the common key ---
-    set(newMessageRef, messageData); 
+    set(newMessageRef, messageData);
 
     // --- 3. Save message to receiver's node using the *same common key* ---
     const receiverRef = ref(db, `users/${receiverId}/messages/${senderId}/${messageKey}`);
-    set(receiverRef, messageData); 
-    
+    set(receiverRef, messageData);
+
     console.log("Message sent with key:", messageKey);
     setText("");
-};
-  const handelChat = (id:any)=>{
-  const currentUid = currentUser?.uid;
-  const isMyMessage = id.sender === currentUid;
-  if (!currentUid) return;
+  };
+  const handelChat = (id: any) => {
+    const currentUid = currentUser?.uid;
+    const isMyMessage = id.sender === currentUid;
+    if (!currentUid) return;
 
     if (isMyMessage) {
-       Alert.alert(
-      "Delete Chat",
-      "Are you sure you want to delete this chat?",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
- 
-        {
-  text: "Delete for Me",
-  onPress: () => deleteForMe({ messageId: id.id, otherUserId: chatId, })
-},
-   
-        {
-          text: "Delete for everyone",
-          onPress: () => deleteChat({ messageId: id.id, otherUserId: chatId, }),
-          style: "destructive",
-        }
-      ],
-      { cancelable: false }
-    );
-  }else{
+      Alert.alert(
+        "Delete Chat",
+        "Are you sure you want to delete this chat?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel",
+          },
 
-    Alert.alert(
-      "Delete Chat",
-      "Are you sure you want to delete this chat?",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        
-        {
-          text: "Delete for Me",
-          onPress: () => deleteForMe({ messageId: id.id, otherUserId: chatId, })
-        },
-        
-     
-      ],
-      { cancelable: false }
-    );
+          {
+            text: "Delete for Me",
+            onPress: () => deleteForMe({ messageId: id.id, otherUserId: chatId, })
+          },
+
+          {
+            text: "Delete for everyone",
+            onPress: () => deleteChat({ messageId: id.id, otherUserId: chatId, }),
+            style: "destructive",
+          }
+        ],
+        { cancelable: false }
+      );
+    } else {
+
+      Alert.alert(
+        "Delete Chat",
+        "Are you sure you want to delete this chat?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel",
+          },
+
+          {
+            text: "Delete for Me",
+            onPress: () => deleteForMe({ messageId: id.id, otherUserId: chatId, })
+          },
+
+
+        ],
+        { cancelable: false }
+      );
+    }
   }
-}
 
   const renderItem = ({ item }: { item: any }) => (
     <View
@@ -187,61 +187,70 @@ const ChatScreen = ({ navigation, route }: { navigation: any, route: any }) => {
         }
       ]}
     >
-      <TouchableOpacity 
-    onLongPress={()=> handelChat(item)}>
+      <TouchableOpacity
+        onLongPress={() => handelChat(item)}>
 
-      <Text style={{ color: item.sender === currentUser?.uid ? '#fff' : '#000' }}>{item.text}</Text>
-      <Text style={styles.timestamp}>{new Date(item.timestamp).toLocaleTimeString()}</Text>
-        </TouchableOpacity>
+        <Text style={{ color: item.sender === currentUser?.uid ? '#fff' : '#000000ff' }}>{item.text}</Text>
+        <Text style={[styles.timestamp, { color: item.sender === currentUser?.uid ? '#fff' : '#000' }]}> {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</Text>
+      </TouchableOpacity>
     </View>
   )
   return (
     <SafeAreaView style={{ flex: 1 }}>
-     <StatusBar backgroundColor="#0A0A0A" barStyle="light-content" />
-     
-        <View style={styles.container}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Icon name='arrow-left' size={25} color={'#fff'} />
-              </TouchableOpacity>
-              {otherProfile?.image ? (
-                <Image source={{ uri: `data:image/jpeg;base64, ${otherProfile.image}` }} style={styles.userImage} />
-              ) : (
-                <View style={styles.placeholderImage}></View>
-              )}
-            </View>
-            <Text style={styles.title}>{otherProfile?.name || "User"}</Text>
-          </View>
-
-          {/* Chat Content */}
-
-          <FlatList
-            data={messages}
-            keyExtractor={item => item.id}
-            renderItem={renderItem}
-            inverted
-            keyboardShouldPersistTaps='never'
-            contentContainerStyle={{ padding: 10, }} // add bottom space
-          />
-
-          {/* Bottom Input Bar */}
-          <View style={styles.bottom}>
-            <Icon name="plus" size={30} color="#6C63FF" style={{ marginRight: 10 }} />
-            <View style={styles.inputContainer}>
-              <TextInput
-                placeholder="Type a message"
-                style={styles.textInput}
-                value={text}
-                onChangeText={setText}
-              />
-            </View>
-            <TouchableOpacity onPress={sendMessage}>
-              <Icon name="paper-plane" size={30} color="#6C63FF" style={{ marginLeft: 10 }} />
+      <StatusBar backgroundColor="#0A0A0A" barStyle="light-content"/>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Icon name='arrow-left' size={25} color={'#fff'} />
             </TouchableOpacity>
+            {otherProfile?.image ? (
+              <Image source={{ uri: `data:image/jpeg;base64, ${otherProfile.image}` }} style={styles.userImage} />
+            ) : (
+              <View style={styles.placeholderImage}>
+              <Image source={require('../assets/icon/Profile.jpg')} style={styles.userImage} />
+              </View>
+            )}
           </View>
+          <Text style={styles.title}>{otherProfile?.name || "User"}</Text>
         </View>
+
+        {/* Chat Content */}
+         <FlatList
+          data={messages}
+          keyExtractor={item => item.id}
+          renderItem={renderItem}
+          inverted
+          keyboardShouldPersistTaps='never'
+          contentContainerStyle={{ padding: 10, }} // add bottom space
+          />
+   
+
+        <View style={styles.bottom}>
+          {/* <Icon name="plus" size={30} color="#6C63FF" style={{ marginRight: 10 }} /> */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Type a message"
+              style={styles.textInput}
+              value={text}
+              onChangeText={setText}
+              mode="flat"
+              underlineColor="transparent"
+            />
+
+          </View>
+          <View
+            style={styles.sendButton}
+          >
+
+          <TouchableOpacity 
+            onPress={sendMessage}>
+            <Icon name="paper-plane" size={30} color="#6C63FF" style={{  }} />
+          </TouchableOpacity>
+              </View>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -285,8 +294,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 30,
-        borderWidth: 1,
+    borderWidth: 1,
     borderColor: '#ddd',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.26,
+    shadowRadius: 3,
+    elevation: 7,
+  },
+  sendButton: {
+    marginLeft: 10,
+    paddingHorizontal: 15,
+    paddingVertical:15,
+    backgroundColor:'white',
+    borderRadius: 40,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.26,
@@ -309,7 +330,8 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     backgroundColor: 'transparent',
-    bottom: 0
+    paddingHorizontal: 20,
+    borderRadius: 30,
   },
   messageContainer: {
     maxWidth: '70%',
